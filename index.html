@@ -105,6 +105,31 @@
    <div class="rowitem"><div class="rowico">♧</div><div><b data-i18n="wholeHome">Whole home</b><p data-i18n="wholeHomeTip">Address dampness at its source, avoid ozone-generating devices and never block required appliance ventilation.</p></div></div>
   </div></div>
   <div class="card"><h2 data-i18n="sourceCheck">Find the sources worth tackling first</h2><p class="muted" data-i18n="sourceCheckSub">Select anything that applies. The app will build a practical checklist.</p><div id="sourcesList"></div><div class="notice" id="indoorResult" data-i18n="sourceDefault">Start with the source: prevention is usually more useful than masking pollution after it is created.</div></div></div>
+  <div class="section-head"><h2 data-i18n="cleanAirTools">Choosing cleaner-air equipment</h2><span data-i18n="practicalNotPrescription">PRACTICAL GUIDE · NOT A MEDICAL PRESCRIPTION</span></div>
+  <div class="grid two">
+   <div class="card"><h2 data-i18n="cadrTitle">Room air-cleaner sizing helper</h2><p class="muted" data-i18n="cadrIntro">Estimate the clean-air delivery rate for your chosen room air-change target and compare it with the manufacturer's CADR rating.</p>
+    <div class="form">
+     <div class="field"><label data-i18n="roomArea">Room floor area (m²)</label><input id="roomArea" type="number" min="1" max="300" value="18"></div>
+     <div class="field"><label data-i18n="ceilingHeight">Ceiling height (m)</label><input id="ceilingHeight" type="number" min="1.8" max="6" step=".1" value="2.7"></div>
+     <div class="field"><label data-i18n="airChanges">Chosen air changes per hour</label><select id="airChanges"><option value="2">2 ACH</option><option value="3">3 ACH</option><option value="4" selected>4 ACH</option><option value="5">5 ACH</option><option value="6">6 ACH</option></select></div>
+    </div>
+    <div class="notice" id="cadrResult"><b>194 m³/h</b><br>Illustrative clean-air delivery for the selected room and target.</div>
+    <p class="footnote" data-i18n="cadrMethod">Calculation: room area × ceiling height × selected air changes per hour. The selected ACH is a planning input, not a universal health standard. Check the entire open-plan area, actual CADR at the speed you will use, noise, filter availability and maintenance.</p>
+    <div class="action-row"><a class="btn light" href="https://www.epa.gov/indoor-air-quality-iaq/guide-air-cleaners-home" target="_blank" rel="noopener" data-i18n="epaGuide">EPA guide to home air cleaners ↗</a></div>
+   </div>
+   <div class="card"><h2 data-i18n="equipmentBasics">What to check before buying or using</h2>
+    <div class="list">
+     <div class="rowitem"><div class="rowico">01</div><div><b data-i18n="hepaTitle">Particles: HEPA or an adequate smoke CADR</b><p data-i18n="hepaText">Match the manufacturer's room-size guidance and CADR to the whole space. Higher CADR generally means greater particle-cleaning capacity. Keep airflow unobstructed.</p></div></div>
+     <div class="rowitem"><div class="rowico">02</div><div><b data-i18n="carbonTitle">Gases and odours: a suitable sorbent filter</b><p data-i18n="carbonText">Particle filters do not automatically remove gases. Look for an activated-carbon or other gas-specific filter; effectiveness depends on filter amount and replacement.</p></div></div>
+     <div class="rowitem"><div class="rowico">03</div><div><b data-i18n="ozoneTitle">Avoid ozone-generating devices</b><p data-i18n="ozoneText">Ozone is a lung irritant. Be cautious with ionizers, plasma and similar technologies; review independent emissions information and product documentation.</p></div></div>
+     <div class="rowitem"><div class="rowico">04</div><div><b data-i18n="maintenanceTitle">Maintenance is part of performance</b><p data-i18n="maintenanceText">Follow filter replacement and cleaning instructions. A device that is too noisy to keep running or has unavailable replacement filters may not suit your routine.</p></div></div>
+    </div>
+   </div>
+  </div>
+  <div class="grid two" style="margin-top:13px">
+   <div class="card"><h2 data-i18n="respiratorTitle">When a particle respirator is relevant</h2><p class="muted" data-i18n="respiratorText">A properly fitted, certified particulate respirator such as an N95-type filtering facepiece can reduce inhalation of particles when used correctly. Fit and seal matter; follow product instructions and local public-health guidance.</p><p class="muted" data-i18n="respiratorLimit">Important: particle respirators do not protect against gases or vapours. A loose cloth or surgical-style mask is not the same as a tight-fitting particulate respirator. This guide does not determine whether a respirator is suitable for your health or work.</p><a href="https://www.cdc.gov/niosh/ppe/respirators/ffr.html" target="_blank" rel="noopener" data-i18n="cdcRespGuide">CDC / NIOSH respirator guidance ↗</a></div>
+   <div class="card"><h2 data-i18n="sourceBeforeDevice">Fix the source before adding a device</h2><p class="muted" data-i18n="sourceBeforeDeviceText">Filtration is one layer. Keep rooms smoke-free, use externally vented cooking extraction where possible, damp-clean dust, address moisture and follow safe ventilation practices. A purifier does not make indoor combustion harmless.</p><div class="notice" data-i18n="equipmentDisclaimer">This helper is arithmetic, not a product recommendation or certification. It does not measure room air, guarantee an air-change rate or replace building/occupational advice.</div></div>
+  </div>
  </section>
 
  <section class="page" id="page-commute">
