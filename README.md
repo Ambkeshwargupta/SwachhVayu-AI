@@ -26,20 +26,23 @@ Air-quality apps already do a good job of showing numbers, maps and alerts. Vayu
 | Outlook | 24-hour curve and five-day daily summary from the forecast response |
 | Day planner | Finds comparatively lower modelled hours for a selected activity and duration |
 | Place watchlist | Geocoding search, up to five saved places and side-by-side model-grid comparison |
-| Local alerts | User-selected AQI threshold and browser notifications, subject to permission and the page being open |
+| Local alerts | User-selected AQI threshold and browser notifications, subject to permission and the page being open; cached forecast fallback and 15-minute refresh while open |
 | Household routines | Optional household context and daily habits stored in local browser storage |
-| Indoor source guide | Select common sources to get practical source-control actions; it does not measure indoor air |
+| Indoor source guide | Source-control checklist, room-by-room tips, CADR sizing helper, purifier filter selection basics and respirator limitations; it does not measure indoor air |
 | Commute choices | Illustrative weekly passenger-transport CO2 comparison |
 | Citizen action | Prepares and copies a pollution-observation note, then links to CPCB's official complaint guidance |
 | Air guide | Transparent, deterministic question-and-answer rules grounded in the forecast loaded in the app |
 | Language | English and Hindi interface |
 | Briefing export | Browser print view, suitable for saving as PDF |
+| Quick actions | One-click routes from the briefing to planning, indoor controls and citizen reporting |
+| Routine explanation | Personalised “why this / why now / what changes” cards based on current model category and selected routine, not a personal health-risk score |
 
 ## Data sources and what the values mean
 
 - [Open-Meteo Air Quality API](https://open-meteo.com/en/docs/air-quality-api), using the **CAMS Global** domain for modelled outdoor pollutant concentrations and U.S. AQI fields.
 - [Open-Meteo Forecast API](https://open-meteo.com/en/docs) for current wind speed and relative humidity.
 - [Open-Meteo Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for place-name search.
+- [EPA Guide to Air Cleaners in the Home](https://www.epa.gov/indoor-air-quality-iaq/guide-air-cleaners-home) and [CDC/NIOSH filtering facepiece respirator guidance](https://www.cdc.gov/niosh/ppe/respirators/ffr.html).
 - [CPCB National AQI method](https://app.cpcbccr.com/ccr_docs/About_AQI.pdf), [Government of India's real-time AQI dataset page](https://www.data.gov.in/resource/real-time-air-quality-index-various-locations) and [WHO 2021 Air Quality Guidelines](https://www.who.int/publications/i/item/9789240034228) are linked as authoritative references, not silently substituted into the model output.
 
 ### Important data distinction
@@ -55,7 +58,7 @@ The CAMS Global model grid is approximately 45 km. A model-grid estimate can mis
 A review of established services informed the following choices:
 
 - **IQAir AirVisual:** current conditions, pollutant breakdowns, forecasts, health guidance, saved locations and alerts. VayuGuard adopts a multi-pollutant view, a five-day outlook, saved locations and optional local alerts.
-- **Plume Labs / Flow:** time-aware exposure planning, identifying comparatively cleaner moments and commute context. VayuGuard adopts a routine-led window finder, but does not claim street-by-street accuracy or cleanest-route routing from a 45 km model.
+- **Plume Labs / Flow:** its Flow product page says Flow and Flow 2 are no longer for sale. As a historical design reference, it demonstrated personal exposure history, movement/spot views and route context. VayuGuard adopts time-aware planning but does not claim device-level or street-route accuracy.
 - **AirNow:** quick local and forecast views, multiple saved areas and map-based exploration. VayuGuard adopts multi-place comparison while keeping its model limitations visible.
 - **CPCB SAMEER:** official public complaint workflows, including location, category, photo evidence, acknowledgement and tracking. VayuGuard adds a report-note preparation helper and a clear hand-off to CPCB guidance; it does not submit a complaint or represent an authority.
 - **OpenAQ:** an open platform for harmonised ground-level measurements. It is a potential future station-observation source, but station coverage and source provenance must be checked; OpenAQ explicitly notes that its dataset does not represent all air-quality monitoring data worldwide and provides physical measurements rather than aggregated AQIs.
@@ -68,7 +71,7 @@ The differentiator is not a longer feature list. It is a clear chain from **fore
 - **Leading pollutant:** the app compares available pollutant-specific U.S. AQI sub-indices and displays the largest available component as the leading model signal. This is not a chemical source-apportionment study.
 - **Daily average:** the five-day cards average the hourly modelled U.S. AQI values available for each calendar day in the API response. This is a descriptive forecast summary, not a regulatory 24-hour station average.
 - **Activity windows:** the planner sorts future hourly model values and surfaces lower-ranked hours. Lower is relative, not a safety certification.
-- **Indoor air:** outdoor model values are never converted into indoor PM2.5. Indoor advice is source-control guidance only.
+- **Indoor air:** outdoor model values are never converted into indoor PM2.5. Indoor advice is source-control guidance plus a room-volume × user-selected ACH arithmetic helper. The ACH is a user input, not a universal health target. EPA advises matching CADR and room size, checking smoke CADR for smaller particles, using sorbent media for gases where appropriate and avoiding ozone-generating devices. Particle respirators do not filter gases or vapours; fit and standard matter.
 - **Commute:** illustrative default factors in g CO2 per passenger-kilometre: petrol car 192, petrol two-wheeler 72, bus 89, metro 45, carpool (two occupants) 96, walk/cycle 0 operational tailpipe emissions. These are not verified local fleet factors; upstream lifecycle emissions are excluded.
 - **Local alert:** browser notification permission is optional. The prototype checks the threshold when data is loaded/refreshed while the page is open. It is not a server push service and cannot guarantee delivery in the background.
 - **Report helper:** the app copies a draft note only. A user must review it and submit through the official route. No complaint, photo or location is transmitted by VayuGuard.
