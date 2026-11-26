@@ -246,6 +246,17 @@ h1{font:800 clamp(27px,2.45vw,36px) "Manrope",sans-serif;letter-spacing:-1.45px;
  .card,.nav button,.btn{transition:none}
 }
 
+
+@media print{
+ body{background:#fff;overflow:visible}
+ .shell{display:block;max-width:none;overflow:visible}
+ aside,.topbar,.action-row,.btn,.toolbtn,.select{display:none!important}
+ .main{width:auto;max-width:none;padding:0;overflow:visible}
+ .page{display:none!important}
+ .page.active{display:block!important;animation:none}
+ .card{box-shadow:none;break-inside:avoid}
+ .air-card{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
