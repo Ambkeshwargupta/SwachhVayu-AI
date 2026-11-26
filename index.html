@@ -257,6 +257,11 @@ h1{font:800 clamp(27px,2.45vw,36px) "Manrope",sans-serif;letter-spacing:-1.45px;
  .card{box-shadow:none;break-inside:avoid}
  .air-card{print-color-adjust:exact;-webkit-print-color-adjust:exact}
 }
+
+/* Keep sticky workspace chrome working while clipping accidental horizontal overflow. */
+body{overflow-x:clip}
+.shell{overflow:visible}
+.main{overflow:visible}
 </style>
 </head>
 <body>
