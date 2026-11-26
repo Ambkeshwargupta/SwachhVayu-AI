@@ -250,6 +250,35 @@ The application does not diagnose, treat, assess individual susceptibility or pr
 
 ## 6. User experience and interaction design
 
+### Competitive interface review (26 November 2026)
+
+The review considered product and help pages from IQAir AirVisual, EPA AirNow, OpenAQ Explorer, Google's Air Quality API, Plume Flow and the World Air Quality Index project. The application does not copy a competitor's visual identity; it translates useful interaction patterns into a different, source-honest product.
+
+- **IQAir AirVisual:** product information describes current local air, multiple pollutant detail, 7-day forecasts, smart alerts, broad location coverage and monitor/purifier integration. The visual lesson is that an AQI number needs supporting pollutant detail, forecast context and location controls—not a decorative number alone. VayuGuard uses a compact current reading, six pollutant cards, a daily outlook, saved locations and a visible model-data label. It does not claim IQAir's monitor network or coverage. Reference: https://www.iqair.com/in-en/air-quality-monitors/air-quality-app
+- **EPA AirNow:** its help pages explain the local current AQI dial alongside the update time, primary pollutant, steps to reduce exposure, other pollutants, forecasts, recent trends and routes to maps/monitors. The lesson is to make the current status and the next useful action immediately legible. VayuGuard places the current model reading, dominant model sub-index, plain-language interpretation and forecast windows at the top. It does not use an AirNow dial or claim EPA monitoring. Reference: https://www.airnow.gov/how-to-use-this-site/
+- **OpenAQ Explorer:** its workflow uses place search, a map, monitor/sensor filters, provider selection and a detail panel with latest readings and patterns. It distinguishes reference-grade monitors from smaller air sensors and exposes raw pollutant measurements rather than silently turning them into an AQI. The lesson for VayuGuard is provenance-first presentation: model estimates, station measurements and sensor data must have visually distinct labels. The current VayuGuard prototype has no station map, so it does not invent monitor dots or neighbourhood-level readings. Reference: https://explore.openaq.org/getting-started
+- **Google Maps Platform Air Quality API:** documentation describes current conditions, hourly history for up to 30 days, hourly forecasts up to 96 hours, heatmap tiles and pollutant/health-recommendation details, with coverage-dependent air-quality indexes and a documented 500 × 500 m resolution. This informed a future-oriented hierarchy of now, trend, outlook and pollutant context. It is not integrated into this static app; the current data contract remains Open-Meteo CAMS Global. Reference: https://developers.google.com/maps/documentation/air-quality/overview
+- **Plume Flow:** this is now a historical design reference—Plume states Flow and Flow 2 are no longer for sale. The documented product emphasized indoor/outdoor exposure, time and place, maps and route comparisons. VayuGuard borrows the principle that air information should connect to everyday routines, but it does not claim personal sensor exposure or cleanest-street routing. Reference: https://plumelabs.com/en/flow/
+- **World Air Quality Index project:** its published app-history material describes station maps, pollutant graphs, wind conditions, forecasts, widgets and threshold notifications. This supports a product principle: users benefit from seeing weather and pollutant changes alongside an index, but any station or forecast source needs to remain explicit. Reference: https://aqicn.org/faq/
+
+**Design decisions from the review:** keep the current reading and main interpretation above the fold; show the pollutant breakdown as a compact set of comparable data tiles; give forecasts their own visual hierarchy; allow fast place switching; make actionable guidance discoverable; and distinguish model data from official observations in the interface itself. Do not add a map, station ranking, trend history or sensor state unless an appropriate data source exists.
+
+### VayuGuard visual system
+
+The redesign uses a distinctive civic/environmental “field desk” direction rather than a generic AI-chat interface:
+
+- Deep forest-green navigation rail, restrained lime highlight and clean neutral work surface.
+- Compact sans-serif display typography for scanability, with a monospaced label treatment for units, timestamps and provenance.
+- High-contrast current-air summary paired with plain-language interpretation; the AQI reading remains visually important but does not dominate the complete page.
+- Pollutants displayed as aligned measurement tiles, not floating statistics.
+- Reusable card, form, row, badge and button styles across every section.
+- Dark source-check panel in the indoor section, giving interactive controls a stronger visual anchor.
+- Consistent iconography, clearer focus states, hover feedback, mobile navigation and reduced-motion handling.
+- Fixed grid sizing and min-width safeguards to prevent two-column content from extending beyond the viewport.
+
+The intention is a practical control surface: clear enough to use quickly, calm enough to trust, and visually distinct from an “AI for everything” template.
+
+
 The current redesign intentionally moves away from generic AI/SaaS visual conventions:
 - editorial typography and a restrained civic/environmental palette;
 - direct air briefing as the first screen, not an AI chatbot;
