@@ -6,6 +6,19 @@ VayuGuard is a practical, bilingual (English / Hindi) urban-air decision-support
 
 **Live site:** https://ambkeshwargupta.github.io/SwachhVayu-AI/
 
+## Interface direction
+
+The current interface uses a distinctive civic/environmental “field desk” design: deep forest-green navigation, a restrained lime accent, compact typography, aligned pollutant tiles, a strong current-air summary, and consistent controls across the experience. The redesign also tightens responsive grid sizing to avoid content spilling beyond the viewport.
+
+A product-interface review informed the hierarchy:
+- **IQAir AirVisual:** current air, pollutant breakdowns, forecasts, smart alerts and location views.
+- **EPA AirNow:** current AQI with primary pollutant and actions, plus forecasts, recent trends and access to maps.
+- **OpenAQ Explorer:** place search, map exploration and a visible distinction between reference monitors and air sensors.
+- **Google Air Quality API:** current conditions, hourly history, forecasts, heatmap tiles, pollutant details and recommendations.
+- **Plume Flow:** historical example of connecting indoor/outdoor exposure to time, place and everyday routes; Flow and Flow 2 are no longer for sale.
+
+These were used as design references, not as claims that their data feeds are integrated. VayuGuard's main dashboard remains based on Open-Meteo CAMS Global model output, and it does not invent monitor locations, street-level routes or historical station records. See [METHODOLOGY.md](METHODOLOGY.md) for the review and design decisions.
+
 ## Product direction
 
 Air-quality apps already do a good job of showing numbers, maps and alerts. VayuGuard focuses on the gap between seeing a number and knowing what to do next:
