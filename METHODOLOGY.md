@@ -31,11 +31,11 @@ Reference: https://www.iqair.com/air-quality-monitors/air-quality-app
 
 ### Plume Labs and Flow
 
-Plume Labs presents pollution peaks and comparatively cleaner moments, street-level maps, and a Flow companion experience with exposure history and commute-route context.
+The current Flow product page says Flow and Flow 2 are no longer for sale. As a historical product reference, Plume documented pollution tracking indoors and outdoors, exposure history, movement/spot cards and route comparisons. These remain useful design lessons, but VayuGuard does not claim to provide Flow-like personal monitoring or route accuracy.
 
 **VayuGuard decisions:** make the next useful time window easy to find and connect the forecast to routines. Do not claim street-by-street resolution or a lowest-exposure route from a global forecast grid of roughly 45 km.
 
-Reference: https://plumelabs.com/air/
+Reference: https://plumelabs.com/en/flow/
 
 ### AirNow
 
@@ -167,11 +167,32 @@ The planner takes future hourly modelled U.S. AQI values and sorts them in ascen
 
 It does not calculate personal inhaled dose, biological response, health risk, a safe threshold, or a route-specific exposure estimate. Lower forecast values are relative to the selected location and forecast period only.
 
-### 4.5 Household context
+### 4.5 Room air-cleaner sizing helper
+
+The indoor section includes a simple planning calculator:
+
+`estimated clean-air delivery (m³/h) = room floor area (m²) × ceiling height (m) × user-selected air changes per hour`
+
+The result is also converted to cubic feet per minute using approximately 1 m³/h = 0.5886 CFM. For example, an 18 m² room with a 2.7 m ceiling and a user-selected target of 4 ACH gives 194.4 m³/h (about 115 CFM).
+
+The chosen ACH is an input, not a universal health standard or app recommendation. The calculation does not consider leakage, mixing, furniture, filter bypass, fan speed, outdoor air exchange or pollutant generation. It does not certify a device. EPA guidance says to match a cleaner's CADR and manufacturer's room-size recommendation to the space; a higher CADR generally serves a larger area. For small particles, EPA points consumers to a high smoke CADR or HEPA designation. For gases, an activated-carbon or other appropriate sorbent is needed; particle filtration alone does not automatically remove gases. Avoid devices that intentionally generate ozone.
+
+References:
+- EPA Guide to Air Cleaners in the Home: https://www.epa.gov/indoor-air-quality-iaq/guide-air-cleaners-home
+- EPA Air Cleaners and HVAC Filters: https://www.epa.gov/indoor-air-quality-iaq/air-cleaners-hvac-filters-and-respiratory-viruses
+
+### 4.6 Respirator education
+
+The indoor guidance includes a short, non-prescriptive explanation that a properly fitted, certified particulate respirator can reduce particle inhalation when used correctly, but filtering facepiece respirators do not protect against gases or vapours. Fit/seal and the product's applicable certification matter. The prototype does not recommend a particular product, determine medical suitability or replace occupational respiratory-protection requirements.
+
+Reference:
+- CDC / NIOSH Filtering Facepiece Respirators: https://www.cdc.gov/niosh/ppe/respirators/ffr.html
+
+### 4.7 Household context
 
 Household name, home type, cooking arrangement, purifier availability, simple routine labels and checklist completion are stored using browser local storage. They do not leave the browser. The prototype intentionally avoids collecting health diagnoses, symptoms, medication or sensitive personal details.
 
-### 4.6 Indoor source-control checklist
+### 4.8 Indoor source-control checklist
 
 Selected source labels produce a practical checklist:
 - incense / dhoop;
@@ -184,7 +205,7 @@ Selected source labels produce a practical checklist:
 
 These are reminders to reduce or manage sources. They are not sensor readings, indoor PM2.5 estimates or building inspections.
 
-### 4.7 Commute comparison
+### 4.9 Commute comparison
 
 The illustrative passenger-kilometre factors used by the calculator are:
 - petrol car: 192 g CO2 / passenger-km;
@@ -200,13 +221,13 @@ Formula:
 
 These factors are illustrative defaults, not verified local fleet factors. Actual emissions vary by vehicle age, fuel, load, occupancy, route, congestion, driving style and electricity mix. Upstream fuel, electricity and vehicle lifecycle emissions are excluded. The calculator is not a measure of a commuter's personal air-pollution exposure.
 
-### 4.8 Browser-local alert
+### 4.10 Browser-local alert
 
 The visitor chooses a U.S. AQI threshold and explicitly grants browser notification permission. When a forecast is loaded or refreshed while the page is open, the app checks the currently selected modelled value and may show a local notification if the threshold is met.
 
 This is not a remote push-notification system. It does not provide reliable background delivery, does not monitor continuously while the browser is closed and does not replace official emergency alerts.
 
-### 4.9 Citizen report note
+### 4.11 Citizen report note
 
 The report helper creates a local draft containing the selected source category, user-entered location, observation time and description. It copies the note to the clipboard. Nothing is submitted to CPCB, SAMEER or any other authority by the app. The user must review the information and use the official route.
 
@@ -301,3 +322,5 @@ This separation is the foundation for a credible product rather than a visually 
 10. OpenAQ platform: https://openaq.org/platform/
 11. OpenAQ API overview: https://docs.openaq.org/about/about
 12. WHO 2021 Global Air Quality Guidelines: https://www.who.int/publications/i/item/9789240034228
+13. EPA Guide to Air Cleaners in the Home: https://www.epa.gov/indoor-air-quality-iaq/guide-air-cleaners-home
+14. CDC / NIOSH Filtering Facepiece Respirators: https://www.cdc.gov/niosh/ppe/respirators/ffr.html
