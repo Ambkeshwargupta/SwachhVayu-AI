@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: vayuguard-ai-worker
@@ -34,9 +34,29 @@ jobs:
           : "${CLOUDFLARE_API_TOKEN:?Add CLOUDFLARE_API_TOKEN in GitHub Actions secrets}"
           : "${CLOUDFLARE_ACCOUNT_ID:?Add CLOUDFLARE_ACCOUNT_ID in GitHub Actions secrets}"
           : "${GEMINI_API_KEY:?Add GEMINI_API_KEY in GitHub Actions secrets}"
-          npx --yes wrangler@latest deploy 2>&1 | tee worker-deploy.log
+          npx --yes wrangler@latest deploy 2>&1 | tee "$RUNNER_TEMP/vayuguard-worker-deploy.log"
           printf '%s' "$GEMINI_API_KEY" | npx --yes wrangler@latest secret put GEMINI_API_KEY
-          echo "## VayuGuard AI Worker" >> "$GITHUB_STEP_SUMMARY"
-          echo "The Worker code and encrypted Gemini secret were deployed." >> "$GITHUB_STEP_SUMMARY"
-          echo "Find the workers.dev URL in the Deploy Worker output above." >> "$GITHUB_STEP_SUMMARY"
-          echo "Worker endpoint path: /ask (health check: /health)." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Configure the frontend Worker URL
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORKER_BASE_URL="$(grep -Eo 'https://[A-Za-z0-9.-]+\.workers\.dev' "$RUNNER_TEMP/vayuguard-worker-deploy.log" | tail -n1 || true)"
+          if [[ -z "$WORKER_BASE_URL" ]]; then
+            echo "Could not detect the workers.dev URL. Check the deployment output and Cloudflare Workers & Pages settings." >&2
+            exit 1
+          fi
+          WORKER_ENDPOINT="${WORKER_BASE_URL%/}/ask"
+          printf '// Auto-configured by the VayuGuard AI deployment workflow.\nwindow.VAYUGUARD_AI_ENDPOINT = "%s";\n' "$WORKER_ENDPOINT" > ai-config.js
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ai-config.js
+          if git diff --cached --quiet; then
+            echo "The frontend already points to this Worker endpoint."
+          else
+            git commit -m "Configure deployed VayuGuard Gemini endpoint"
+            git push
+          fi
+          echo "## VayuGuard Gemini API" >> "$GITHUB_STEP_SUMMARY"
+          echo "Worker endpoint: $WORKER_ENDPOINT" >> "$GITHUB_STEP_SUMMARY"
+          echo "GitHub Pages will redeploy with the live AI endpoint." >> "$GITHUB_STEP_SUMMARY"
