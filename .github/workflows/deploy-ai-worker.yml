@@ -1,0 +1,42 @@
+name: Deploy VayuGuard Gemini API
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "worker/**"
+      - ".github/workflows/deploy-ai-worker.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vayuguard-ai-worker
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Deploy secure Gemini proxy
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${CLOUDFLARE_API_TOKEN:?Add CLOUDFLARE_API_TOKEN in GitHub Actions secrets}"
+          : "${CLOUDFLARE_ACCOUNT_ID:?Add CLOUDFLARE_ACCOUNT_ID in GitHub Actions secrets}"
+          : "${GEMINI_API_KEY:?Add GEMINI_API_KEY in GitHub Actions secrets}"
+          npx --yes wrangler@latest deploy 2>&1 | tee worker-deploy.log
+          printf '%s' "$GEMINI_API_KEY" | npx --yes wrangler@latest secret put GEMINI_API_KEY
+          echo "## VayuGuard AI Worker" >> "$GITHUB_STEP_SUMMARY"
+          echo "The Worker code and encrypted Gemini secret were deployed." >> "$GITHUB_STEP_SUMMARY"
+          echo "Find the workers.dev URL in the Deploy Worker output above." >> "$GITHUB_STEP_SUMMARY"
+          echo "Worker endpoint path: /ask (health check: /health)." >> "$GITHUB_STEP_SUMMARY"
