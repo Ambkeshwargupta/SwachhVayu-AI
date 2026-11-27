@@ -44,7 +44,7 @@ Air-quality apps already do a good job of showing numbers, maps and alerts. Vayu
 | Indoor source guide | Redesigned room-by-room field guide, selectable home-source audit with saved selections, live progress and prioritised action list, CADR sizing helper, purifier filter guidance and respirator limitations; it does not measure indoor air |
 | Commute choices | Illustrative weekly passenger-transport CO2 comparison |
 | Citizen action | Prepares and copies a pollution-observation note, then links to CPCB's official complaint guidance |
-| Air guide | Transparent, deterministic question-and-answer rules grounded in the forecast loaded in the app |
+| Air guide | Live Gemini 3.8 Flash answers through a server-side Cloudflare Worker, grounded in the selected area and currently loaded forecast; English and Hindi |
 | Language | English and Hindi interface |
 | Briefing export | Browser print view, suitable for saving as PDF |
 | Quick actions | One-click routes from the briefing to planning, indoor controls and citizen reporting |
@@ -55,6 +55,7 @@ Air-quality apps already do a good job of showing numbers, maps and alerts. Vayu
 - [Open-Meteo Air Quality API](https://open-meteo.com/en/docs/air-quality-api), using the **CAMS Global** domain for modelled outdoor pollutant concentrations and U.S. AQI fields.
 - [Open-Meteo Forecast API](https://open-meteo.com/en/docs) for current wind speed and relative humidity.
 - [Open-Meteo Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for place-name search.
+- [Google Gemini API](https://ai.google.dev/gemini-api/docs) using Gemini 3.8 Flash for dynamic, context-aware responses in the Air Guide. The API key is kept as an encrypted Cloudflare Worker secret and never included in the public frontend.
 - [BigDataCloud free client-side reverse-geocoding API](https://www.bigdatacloud.com/docs/article/why-is-reverse-geocoding-api-free) to turn the visitor's permissioned, current device coordinates into a readable locality/city label. This service is used only to name the area; it does not provide the air-quality forecast.
 - [EPA Guide to Air Cleaners in the Home](https://www.epa.gov/indoor-air-quality-iaq/guide-air-cleaners-home) and [CDC/NIOSH filtering facepiece respirator guidance](https://www.cdc.gov/niosh/ppe/respirators/ffr.html).
 - [CPCB National AQI method](https://app.cpcbccr.com/ccr_docs/About_AQI.pdf), [Government of India's real-time AQI dataset page](https://www.data.gov.in/resource/real-time-air-quality-index-various-locations) and [WHO 2021 Air Quality Guidelines](https://www.who.int/publications/i/item/9789240034228) are linked as authoritative references, not silently substituted into the model output.
@@ -102,18 +103,47 @@ Then open http://localhost:8000.
 
 ## Deploy
 
-GitHub Pages is configured to deploy through the workflow in `.github/workflows/pages.yml`.
+### Static website
+
+GitHub Pages is configured to deploy through `.github/workflows/pages.yml`.
 
 1. Open **Settings → Pages**.
 2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
-3. Open the **Actions** tab and confirm that **Deploy VayuGuard to GitHub Pages** completes successfully.
-4. Visit the live site URL above.
+3. Confirm that **Deploy VayuGuard to GitHub Pages** completes successfully.
+
+### Secure Gemini assistant backend
+
+The Gemini key must never be placed in `index.html`, `ai-config.js`, or any public repository file. The application calls a Cloudflare Worker, which reads the encrypted `GEMINI_API_KEY` secret and calls Google's Gemini API server-to-server.
+
+The repository already includes `worker/src/index.js`, `worker/wrangler.toml` and `.github/workflows/deploy-ai-worker.yml`. The deployment workflow also writes the resulting `workers.dev` URL into `ai-config.js` and triggers a GitHub Pages redeployment.
+
+Add these two additional **GitHub Actions repository secrets**:
+
+| Secret name | Value |
+| --- | --- |
+| `CLOUDFLARE_API_TOKEN` | A Cloudflare API token with the **Edit Cloudflare Workers** permission, scoped to the account that will host the Worker |
+| `CLOUDFLARE_ACCOUNT_ID` | The Cloudflare account ID where the Worker will be deployed |
+
+The existing `GEMINI_API_KEY` GitHub secret is reused by the workflow and uploaded to Cloudflare as an encrypted Worker secret.
+
+Steps:
+1. Create or sign in to a Cloudflare account.
+2. In **Profile → API Tokens**, create a custom token with **Account → Workers Scripts → Edit** (Cloudflare's “Edit Cloudflare Workers” permission) for the intended account.
+3. Copy the account ID from **Workers & Pages → Overview**.
+4. Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` under GitHub **Settings → Secrets and variables → Actions**.
+5. Open the failed **Deploy VayuGuard Gemini API** run and choose **Re-run failed jobs**, or use **Actions → Deploy VayuGuard Gemini API → Run workflow**.
+6. The workflow deploys the Worker, copies the existing Gemini key into Cloudflare's encrypted Worker secret store, configures the frontend endpoint and triggers a Pages deployment.
+7. Check the Air Guide for the **Gemini AI connected** indicator before recording a GenAI demonstration.
+
+The Worker applies an approximate limit of 8 requests per minute per client IP within each Cloudflare location. Cloudflare documents that its Worker rate-limiting counters are approximate and local to a Cloudflare location. This is a prototype safeguard, not a strict global quota or user authentication system.
 
 ## Privacy and security
 
 - Saved places, household routines, household settings, checklist state, alert preferences and language preference are stored in the visitor's browser using local storage.
 - Browser location is requested only after the visitor selects **Use my location** and grants permission. Coordinates are sent to Open-Meteo for the forecast and to BigDataCloud's free client-side reverse-geocoder to resolve a readable area name. BigDataCloud says it observes the requesting IP alongside the current coordinates and aggregates those pairings anonymously to improve IP-geolocation data. Coordinates are held in the active page session and excluded from the persistent forecast cache. They are stored in the saved-place list only if the visitor explicitly chooses **Save place**.
-- There is no login, profile backend or server-side storage in this prototype.
+- There is no login or server-side profile storage in this prototype. The Gemini Worker is a narrow inference proxy, not a user-account backend.
+- When a visitor submits a question in Air Guide, the question and a limited context packet (selected area name, modelled AQI, pollutant estimates, weather context and a short hourly outlook) are sent to the Cloudflare Worker and then to Google Gemini to generate the response. The app does not send the browser's precise latitude/longitude in this AI context packet.
+- Do not enter symptoms, diagnoses, medication details or other sensitive personal information into the AI chat.
 - Avoid entering sensitive health or personal details, especially on shared devices.
 - Public browser code contains no private API keys. The air-quality, weather and geocoding requests use public endpoints.
 
