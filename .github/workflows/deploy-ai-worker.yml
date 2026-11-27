@@ -5,6 +5,7 @@ on:
     paths:
       - "worker/src/**"
       - "worker/wrangler.toml"
+      - ".github/workflows/deploy-ai-worker.yml"
   workflow_dispatch:
 
 permissions:
