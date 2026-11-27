@@ -38,7 +38,7 @@ Air-quality apps already do a good job of showing numbers, maps and alerts. Vayu
 | Weather context | Wind speed and relative humidity |
 | Outlook | 24-hour curve and five-day daily summary from the forecast response |
 | Day planner | Finds comparatively lower modelled hours for a selected activity and duration |
-| Place watchlist | Geocoding search, up to five saved places and side-by-side model-grid comparison |
+| Place watchlist | Geocoding search, one-tap browser geolocation, up to five saved places and side-by-side model-grid comparison |
 | Local alerts | User-selected AQI threshold and browser notifications, subject to permission and the page being open; cached forecast fallback and 15-minute refresh while open |
 | Household routines | Optional household context and daily habits stored in local browser storage |
 | Indoor source guide | Source-control checklist, room-by-room tips, CADR sizing helper, purifier filter selection basics and respirator limitations; it does not measure indoor air |
@@ -111,6 +111,7 @@ GitHub Pages is configured to deploy through the workflow in `.github/workflows/
 ## Privacy and security
 
 - Saved places, household routines, household settings, checklist state, alert preferences and language preference are stored in the visitor's browser using local storage.
+- Browser location is requested only after the visitor selects **Use my location** and grants permission. Coordinates are sent to Open-Meteo to fetch the forecast, held in the active page session and excluded from the persistent forecast cache. They are stored in the saved-place list only if the visitor explicitly chooses **Save place**.
 - There is no login, profile backend or server-side storage in this prototype.
 - Avoid entering sensitive health or personal details, especially on shared devices.
 - Public browser code contains no private API keys. The air-quality, weather and geocoding requests use public endpoints.
