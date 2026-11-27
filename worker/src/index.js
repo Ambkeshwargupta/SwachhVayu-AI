@@ -269,7 +269,10 @@ export default {
           },
           body: JSON.stringify({
             model: MODEL,
-            input: prompt,
+            input: [{
+              type: "user_input",
+              content: [{ type: "text", text: prompt }]
+            }],
             system_instruction: SYSTEM_INSTRUCTION + "\n\nRespond in " + language + ".",
             generation_config: { max_output_tokens: 700 },
             store: false
