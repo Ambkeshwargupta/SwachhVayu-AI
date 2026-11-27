@@ -1,4 +1,5 @@
 const MODEL = "gemini-3.8-flash";
+const API_REVISION = "2026-05-20";
 const ALLOWED_ORIGINS = new Set([
   "https://ambkeshwargupta.github.io",
   "http://localhost:8000",
@@ -165,7 +166,7 @@ export default {
             method: "GET",
             headers: {
               "x-goog-api-key": env.GEMINI_API_KEY,
-              "Api-Revision": "2026-05-20"
+              "Api-Revision": API_REVISION
             }
           },
           15000
@@ -232,7 +233,7 @@ export default {
           headers: {
             "Content-Type": "application/json",
             "x-goog-api-key": env.GEMINI_API_KEY,
-            "Api-Revision": "2026-05-20"
+            "Api-Revision": API_REVISION
           },
           body: JSON.stringify({
             model: MODEL,
