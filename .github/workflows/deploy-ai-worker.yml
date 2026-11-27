@@ -23,6 +23,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Validate Worker syntax
+        run: node --check worker/src/index.js
+
       - name: Deploy secure Gemini proxy
         working-directory: worker
         env:
