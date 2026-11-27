@@ -3,12 +3,13 @@ on:
   push:
     branches: ["main"]
     paths:
-      - "worker/**"
-      - ".github/workflows/deploy-ai-worker.yml"
+      - "worker/src/**"
+      - "worker/wrangler.toml"
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: vayuguard-ai-worker
@@ -39,6 +40,8 @@ jobs:
 
       - name: Configure the frontend Worker URL
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           WORKER_BASE_URL="$(grep -Eo 'https://[A-Za-z0-9.-]+\.workers\.dev' "$RUNNER_TEMP/vayuguard-worker-deploy.log" | tail -n1 || true)"
@@ -59,4 +62,10 @@ jobs:
           fi
           echo "## VayuGuard Gemini API" >> "$GITHUB_STEP_SUMMARY"
           echo "Worker endpoint: $WORKER_ENDPOINT" >> "$GITHUB_STEP_SUMMARY"
-          echo "GitHub Pages will redeploy with the live AI endpoint." >> "$GITHUB_STEP_SUMMARY"
+          echo "Triggering GitHub Pages deployment with the configured endpoint." >> "$GITHUB_STEP_SUMMARY"
+          curl --fail --silent --show-error -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/Ambkeshwargupta/SwachhVayu-AI/actions/workflows/pages.yml/dispatches \
+            -d '{"ref":"main"}'
