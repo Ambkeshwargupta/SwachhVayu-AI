@@ -8,7 +8,7 @@ VayuGuard is a practical, bilingual (English / Hindi) urban-air decision-support
 
 ## Interface direction
 
-The current interface uses a “Human Field Journal” direction: warm sage-grey city-paper surfaces, deep forest-green navigation, lime highlights, larger readable typography, six softly tinted pollutant tiles, a dark forecast instrument with an illuminated trend line, and warmer planning cards. It is intentionally less like a generic white SaaS dashboard and more like a calm, practical environmental field desk. Responsive layouts, focus states and reduced-motion preferences are included.
+The current interface uses a “Human Field Journal” direction: warm sage-grey city-paper surfaces, deep forest-green navigation, lime highlights, larger readable typography, six softly tinted pollutant tiles, a dark forecast instrument with an illuminated trend line, warmer planning cards and distinct room/source-control surfaces on the Indoor Air page. It is intentionally less like a generic white SaaS dashboard and more like a calm, practical environmental field desk. Responsive layouts, focus states and reduced-motion preferences are included.
 
 A product-interface review informed the hierarchy:
 - **IQAir AirVisual:** current air, pollutant breakdowns, forecasts, smart alerts and location views.
@@ -41,7 +41,7 @@ Air-quality apps already do a good job of showing numbers, maps and alerts. Vayu
 | Place watchlist | Geocoding search, one-tap browser geolocation, up to five saved places and side-by-side model-grid comparison |
 | Local alerts | User-selected AQI threshold and browser notifications, subject to permission and the page being open; cached forecast fallback and 15-minute refresh while open |
 | Household routines | Optional household context and daily habits stored in local browser storage |
-| Indoor source guide | Source-control checklist, room-by-room tips, CADR sizing helper, purifier filter selection basics and respirator limitations; it does not measure indoor air |
+| Indoor source guide | Redesigned room-by-room field guide, selectable home-source audit with saved selections, live progress and prioritised action list, CADR sizing helper, purifier filter guidance and respirator limitations; it does not measure indoor air |
 | Commute choices | Illustrative weekly passenger-transport CO2 comparison |
 | Citizen action | Prepares and copies a pollution-observation note, then links to CPCB's official complaint guidance |
 | Air guide | Transparent, deterministic question-and-answer rules grounded in the forecast loaded in the app |
