@@ -1,4 +1,4 @@
-const MODEL = "gemini-3.8-flash";
+const MODEL = "gemini-3.6-flash";
 const API_REVISION = "2026-05-20";
 const ALLOWED_ORIGINS = new Set([
   "https://ambkeshwargupta.github.io",
@@ -116,7 +116,7 @@ function responseText(data) {
 
 function providerError(status, data) {
   const code = cleanString(data?.error?.status || data?.error?.code, 50);
-  if (status === 429) return "Gemini is busy or the API quota has been reached. Please try again shortly.";
+  if (status === 429) return "Gemini project/model quota reached (RESOURCE_EXHAUSTED). Check AI Studio Rate Limits for RPM, TPM and RPD. Per-day limits reset at midnight Pacific; no automatic retry was made.";
   if (status === 401 || status === 403) return "Gemini authentication or project access was rejected. Check the API key and Gemini API access.";
   if (status === 400) return "Gemini rejected the request configuration" + (code ? " (" + code + ")" : "") + ".";
   if (status >= 500) return "Gemini is temporarily experiencing a service issue. Please try again.";
@@ -124,6 +124,10 @@ function providerError(status, data) {
 }
 
 function interactionFailureReason(data) {
+  const code = interactionFailureCode(data);
+  if (code === "RESOURCE_EXHAUSTED") {
+    return "Gemini project/model quota reached (RPM, TPM or RPD). Check the AI Studio Rate Limit page. Daily request quotas reset at midnight Pacific; wait for reset or increase the project's usage tier.";
+  }
   const issue = data && (data.error || (Array.isArray(data.errors) ? data.errors[0] : null));
   const message = issue && (issue.message || issue.status || issue.code);
   if (typeof message === "string" && message.trim()) return cleanString(message, 280);
@@ -140,7 +144,7 @@ function interactionFailureCode(data) {
 function isRetryableInteractionFailure(data) {
   const code = interactionFailureCode(data);
   const message = interactionFailureReason(data).toLowerCase();
-  return ["INTERNAL", "UNAVAILABLE", "RESOURCE_EXHAUSTED", "DEADLINE_EXCEEDED"].includes(code) ||
+  return ["INTERNAL", "UNAVAILABLE", "DEADLINE_EXCEEDED"].includes(code) ||
     (code === "INVALID_ARGUMENT" && message.includes("there was a problem processing your request"));
 }
 
@@ -171,7 +175,9 @@ export default {
         service: "VayuGuard Gemini assistant",
         model: MODEL,
         api: "Gemini Interactions API",
-        ready: hasGeminiKey(env)
+        modelSupport: "Gemini 3.6 Flash is listed in Google's current Interactions API supported-model documentation.",
+        ready: hasGeminiKey(env),
+        readinessScope: "Worker and encrypted API key only; model quota is checked when a user submits a question."
       }, 200, origin);
     }
 
