@@ -8,12 +8,12 @@ VayuGuard is a practical, bilingual (English / Hindi) urban-air decision-support
 
 ## Interface direction
 
-The current interface uses a distinctive civic/environmental “field desk” design: deep forest-green navigation, a restrained lime accent, compact typography, aligned pollutant tiles, a strong current-air summary, and consistent controls across the experience. The redesign also tightens responsive grid sizing to avoid content spilling beyond the viewport.
+The current interface uses a “Human Field Journal” direction: warm sage-grey city-paper surfaces, deep forest-green navigation, lime highlights, larger readable typography, six softly tinted pollutant tiles, a dark forecast instrument with an illuminated trend line, and warmer planning cards. It is intentionally less like a generic white SaaS dashboard and more like a calm, practical environmental field desk. Responsive layouts, focus states and reduced-motion preferences are included.
 
 A product-interface review informed the hierarchy:
 - **IQAir AirVisual:** current air, pollutant breakdowns, forecasts, smart alerts and location views.
-- **EPA AirNow:** current AQI with primary pollutant and actions, plus forecasts, recent trends and access to maps.
-- **OpenAQ Explorer:** place search, map exploration and a visible distinction between reference monitors and air sensors.
+- **EPA AirNow:** current AQI with primary pollutant and actions, plus forecasts, recent trends, weather and access to maps.
+- **OpenAQ Explorer:** place search, map exploration, source/monitor-type filters, and a visible distinction between reference monitors and air sensors.
 - **Google Air Quality API:** current conditions, hourly history, forecasts, heatmap tiles, pollutant details and recommendations.
 - **Plume Flow:** historical example of connecting indoor/outdoor exposure to time, place and everyday routes; Flow and Flow 2 are no longer for sale.
 
