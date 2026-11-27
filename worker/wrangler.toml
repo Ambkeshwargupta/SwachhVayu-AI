@@ -1,0 +1,16 @@
+name = "vayuguard-ai"
+main = "src/index.js"
+compatibility_date = "2026-11-27"
+workers_dev = true
+preview_urls = false
+
+[observability]
+enabled = false
+
+[[ratelimits]]
+name = "AI_LIMITER"
+namespace_id = "8274318"
+
+[ratelimits.simple]
+limit = 8
+period = 60
