@@ -1379,7 +1379,7 @@ function buildAiContext(){
   next24Hours:next
  };
 }
-async function askGemini(question){
+async function askGeminiOnce(question){
  if(!AI_API_ENDPOINT)throw new Error(LANG==="hi"
   ?"Gemini की सुरक्षित सेवा अभी तैनात नहीं हुई है।"
   :"The secure Gemini service has not been deployed yet.");
@@ -1406,12 +1406,27 @@ async function askGemini(question){
   try{
    const poll=await fetch(statusUrl,{method:"GET",cache:"no-store",signal:pollController.signal});
    let current={};try{current=await poll.json()}catch(e){}
-   if(!poll.ok)throw new Error(current.error||("AI status returned "+poll.status));
+   if(!poll.ok){const issue=new Error(current.error||("AI status returned "+poll.status));issue.retryable=current.retryable===true;throw issue;}
    if(current.status==="completed"&&typeof current.answer==="string"&&current.answer.trim())return current;
    if(current.error)throw new Error(current.error);
   }finally{clearTimeout(pollTimer)}
  }
  throw new Error(LANG==="hi"?"Gemini जवाब तैयार करने में अधिक समय ले रहा है। कृपया फिर कोशिश करें।":"Gemini is taking longer than expected. Please try again.");
+}
+
+
+async function askGemini(question){
+ for(let attempt=0;attempt<2;attempt++){
+  try{return await askGeminiOnce(question)}
+  catch(error){
+   if(attempt===0&&error&&error.retryable===true){
+    await new Promise(function(resolve){setTimeout(resolve,1200)});
+    continue;
+   }
+   throw error;
+  }
+ }
+ throw new Error(LANG==="hi"?"Gemini जवाब उपलब्ध नहीं है।":"Gemini answer unavailable.");
 }
 
 function addBubble(text,who){let b=document.createElement("div");b.className="bubble "+who;b.textContent=text;$("chat").appendChild(b);$("chat").scrollTop=$("chat").scrollHeight;return b}
