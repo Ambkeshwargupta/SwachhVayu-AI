@@ -1,6 +1,5 @@
-// Stable model documented for Gemini Interactions API and background execution.
-const MODEL = "gemini-3.6-flash";
-const API_REVISION = "2026-05-20";
+// A free-tier-friendly Flash-Lite model for short, contextual air-quality explanations.
+const MODEL = "gemini-3.5-flash-lite";
 const ALLOWED_ORIGINS = new Set([
   "https://ambkeshwargupta.github.io",
   "http://localhost:8000",
@@ -117,36 +116,20 @@ function responseText(data) {
 
 function providerError(status, data) {
   const code = cleanString(data?.error?.status || data?.error?.code, 50);
-  if (status === 429) return "Gemini project/model quota reached (RESOURCE_EXHAUSTED). Check AI Studio Rate Limits for RPM, TPM and RPD. Per-day limits reset at midnight Pacific; no automatic retry was made.";
-  if (status === 401 || status === 403) return "Gemini authentication or project access was rejected. Check the API key and Gemini API access.";
-  if (status === 400) return "Gemini rejected the request configuration" + (code ? " (" + code + ")" : "") + ".";
-  if (status >= 500) return "Gemini is temporarily experiencing a service issue. Please try again.";
-  return "The Gemini service could not complete this request (HTTP " + status + ").";
-}
-
-function interactionFailureReason(data) {
-  const code = interactionFailureCode(data);
-  if (code === "RESOURCE_EXHAUSTED") {
-    return "Gemini project/model quota reached (RPM, TPM or RPD). Check the AI Studio Rate Limit page. Daily request quotas reset at midnight Pacific; wait for reset or increase the project's usage tier.";
+  const detail = cleanString(data?.error?.message, 220);
+  if (status === 429 || code === "RESOURCE_EXHAUSTED") {
+    return "Google Gemini quota limit reached (HTTP " + status + "). Check AI Studio Rate Limits for this model's RPM, TPM and RPD. No automatic retry was made.";
   }
-  const issue = data && (data.error || (Array.isArray(data.errors) ? data.errors[0] : null));
-  const message = issue && (issue.message || issue.status || issue.code);
-  if (typeof message === "string" && message.trim()) return cleanString(message, 280);
-  return "The provider marked this interaction as failed without a detailed message.";
-}
-
-function interactionFailureCode(data) {
-  const issue = data && (data.error || (Array.isArray(data.errors) ? data.errors[0] : null));
-  return cleanString(issue && (issue.code || issue.status), 60).toUpperCase();
-}
-
-// Some Gemini background jobs can fail during generation with a generic INVALID_ARGUMENT
-// message even when the same request shape is valid; expose this narrow case for one client retry.
-function isRetryableInteractionFailure(data) {
-  const code = interactionFailureCode(data);
-  const message = interactionFailureReason(data).toLowerCase();
-  return ["INTERNAL", "UNAVAILABLE", "DEADLINE_EXCEEDED"].includes(code) ||
-    (code === "INVALID_ARGUMENT" && message.includes("there was a problem processing your request"));
+  if (status === 401 || status === 403) {
+    return "Google Gemini denied this API key or project access (HTTP " + status + "). Check the selected AI Studio project, model access and API key.";
+  }
+  if (status === 400) {
+    return "Google Gemini rejected the request (HTTP 400)" + (code ? " · " + code : "") + (detail ? " · " + detail : "");
+  }
+  if (status >= 500) {
+    return "Google Gemini returned a provider-side error (HTTP " + status + ")" + (code ? " · " + code : "") + (detail ? " · " + detail : "") + ". Please retry later.";
+  }
+  return "Google Gemini request failed (HTTP " + status + ")" + (code ? " · " + code : "") + (detail ? " · " + detail : "");
 }
 
 export default {
@@ -175,52 +158,10 @@ export default {
         status: "ok",
         service: "VayuGuard Gemini assistant",
         model: MODEL,
-        api: "Gemini Interactions API (synchronous)",
-        modelSupport: "Model generation is executed in the request; the response is returned directly without a background task.",
+        api: "Gemini GenerateContent API",
         ready: hasGeminiKey(env),
-        readinessScope: "Worker and encrypted API key only; model quota is checked when a user submits a question."
+        readinessScope: "Worker and encrypted API key only; model availability and quota are checked when a user submits a question."
       }, 200, origin);
-    }
-
-    if (request.method === "GET" && url.pathname.startsWith("/status/")) {
-      if (!hasGeminiKey(env)) return json({ error: "The Gemini service is not configured yet." }, 503, origin);
-      const taskId = url.pathname.slice("/status/".length);
-      if (!/^[A-Za-z0-9_-]{6,200}$/.test(taskId)) return json({ error: "Invalid interaction ID." }, 400, origin);
-
-      try {
-        const { response, data } = await upstreamJson(
-          "https://generativelanguage.googleapis.com/v1beta/interactions/" + encodeURIComponent(taskId),
-          {
-            method: "GET",
-            headers: {
-              "x-goog-api-key": env.GEMINI_API_KEY,
-              "Api-Revision": API_REVISION
-            }
-          },
-          15000
-        );
-        if (!response.ok) return json({ error: providerError(response.status, data) }, 502, origin);
-        if (data.status === "failed") return json({
-          error: "Gemini interaction failed: " + interactionFailureReason(data),
-          providerCode: interactionFailureCode(data),
-          retryable: isRetryableInteractionFailure(data)
-        }, 502, origin);
-        if (data.status === "completed") {
-          const answer = responseText(data);
-          if (!answer) return json({ error: "Gemini completed the interaction without a text answer. Please try again." }, 502, origin);
-          return json({
-            status: "completed",
-            answer: answer.slice(0, 9000),
-            model: MODEL,
-            provider: "Google Gemini",
-            basedOn: "The question and current VayuGuard page context supplied with this request."
-          }, 200, origin);
-        }
-        return json({ status: data.status || "in_progress" }, 202, origin);
-      } catch (error) {
-        if (error && error.name === "AbortError") return json({ error: "Gemini status check timed out. Please try again." }, 504, origin);
-        return json({ error: "The Gemini service is temporarily unavailable." }, 502, origin);
-      }
     }
 
     if (request.method !== "POST" || url.pathname !== "/ask") return json({ error: "Not found." }, 404, origin);
@@ -259,23 +200,24 @@ export default {
 
     try {
       const { response, data } = await upstreamJson(
-        "https://generativelanguage.googleapis.com/v1beta/interactions",
+        "https://generativelanguage.googleapis.com/v1beta/models/" + MODEL + ":generateContent",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-goog-api-key": env.GEMINI_API_KEY,
-            "Api-Revision": API_REVISION
+            "x-goog-api-key": env.GEMINI_API_KEY
           },
           body: JSON.stringify({
-            model: MODEL,
-            input: [{
-              type: "user_input",
-              content: [{ type: "text", text: prompt }]
+            systemInstruction: {
+              parts: [{ text: SYSTEM_INSTRUCTION + "\n\nRespond in " + language + "." }]
+            },
+            contents: [{
+              role: "user",
+              parts: [{ text: prompt }]
             }],
-            system_instruction: SYSTEM_INSTRUCTION + "\n\nRespond in " + language + ".",
-            generation_config: { max_output_tokens: 700 },
-            store: false
+            generationConfig: {
+              maxOutputTokens: 650
+            }
           })
         },
         50000
@@ -284,18 +226,26 @@ export default {
       if (!response.ok) {
         return json({
           error: providerError(response.status, data),
+          providerStatus: response.status,
           providerCode: cleanString(data && data.error && (data.error.status || data.error.code), 60) || null
         }, response.status === 429 ? 429 : 502, origin);
       }
 
-      const answer = responseText(data);
+      const candidate = data && data.candidates && data.candidates[0];
+      const answer = (candidate && candidate.content && Array.isArray(candidate.content.parts) ? candidate.content.parts : [])
+        .map((part) => typeof part.text === "string" ? part.text : "")
+        .join("\n")
+        .trim();
+
       if (!answer) {
-        const status = cleanString(data && data.status, 40);
-        if (status === "failed") {
-          return json({ error: "Gemini could not complete this answer. Please try again." }, 502, origin);
-        }
+        const blockReason = cleanString(data && data.promptFeedback && data.promptFeedback.blockReason, 60);
+        const finishReason = cleanString(candidate && candidate.finishReason, 60);
         return json({
-          error: "Gemini returned no text answer" + (status ? " (status: " + status + ")" : "") + ". Please try again."
+          error: "Gemini returned no text answer" +
+            (blockReason ? " · blocked: " + blockReason : "") +
+            (finishReason ? " · finish reason: " + finishReason : "") +
+            ". Please rephrase the question or try again.",
+          providerStatus: 200
         }, 502, origin);
       }
 
@@ -306,8 +256,8 @@ export default {
         provider: "Google Gemini"
       }, 200, origin);
     } catch (error) {
-      if (error && error.name === "AbortError") return json({ error: "Gemini generation timed out after 50 seconds. Please try again." }, 504, origin);
-      return json({ error: "The Gemini service is temporarily unavailable." }, 502, origin);
+      if (error && error.name === "AbortError") return json({ error: "Google Gemini generation timed out after 50 seconds. Please try again." }, 504, origin);
+      return json({ error: "The Cloudflare Worker could not complete the upstream request. Please check the Gemini endpoint and try again." }, 502, origin);
     }
   }
 };
