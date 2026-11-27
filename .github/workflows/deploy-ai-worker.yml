@@ -104,7 +104,8 @@ jobs:
               if [[ "$poll_code" != "200" && "$poll_code" != "202" ]]; then
                 retryable="$(jq -r '.retryable // false' "$RUNNER_TEMP/vg-smoke-poll.json")"
                 if [[ "$retryable" == "true" ]]; then
-                  echo "Gemini reported a transient generation failure; retrying once with a fresh interaction."
+                  echo "Gemini reported a transient generation failure; provider response:"
+                  cat "$RUNNER_TEMP/vg-smoke-poll.json"
                   return 10
                 fi
                 echo "Gemini status poll returned HTTP $poll_code." >&2
@@ -116,12 +117,23 @@ jobs:
             echo "Gemini background interaction did not complete within the smoke-test window." >&2
             return 1
           }
-          if run_smoke_generation; then
-            :
-          else
-            smoke_status=$?
-            if [[ "$smoke_status" -ne 10 ]]; then exit "$smoke_status"; fi
-            run_smoke_generation
+          smoke_success="false"
+          for generation_attempt in 1 2 3; do
+            if run_smoke_generation; then
+              smoke_success="true"
+              break
+            else
+              smoke_status=$?
+              if [[ "$smoke_status" -ne 10 ]]; then exit "$smoke_status"; fi
+              if [[ "$generation_attempt" -lt 3 ]]; then
+                echo "Starting retry $((generation_attempt + 1)) of 3 after a transient Gemini provider failure."
+                sleep 2
+              fi
+            fi
+          done
+          if [[ "$smoke_success" != "true" ]]; then
+            echo "Gemini smoke test failed after three background interactions." >&2
+            exit 1
           fi
           jq -e '.provider == "Google Gemini" and (.answer | type == "string" and length > 20)' "$RUNNER_TEMP/vg-smoke-response.json" >/dev/null
           echo "Gemini live response verified. Provider: $(jq -r '.provider' "$RUNNER_TEMP/vg-smoke-response.json"); model: $(jq -r '.model' "$RUNNER_TEMP/vg-smoke-response.json")." >> "$GITHUB_STEP_SUMMARY"
