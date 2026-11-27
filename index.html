@@ -216,7 +216,7 @@ h1{font:800 clamp(27px,2.45vw,36px) "Manrope",sans-serif;letter-spacing:-1.45px;
  .main{padding:0 15px 36px;width:100%}
  .topbar{position:relative;height:auto;min-height:56px;margin-bottom:18px;flex-wrap:wrap;padding:10px 0;gap:9px;background:rgba(241,245,241,.95)}
  .tools{width:100%;display:flex;flex-wrap:wrap}
- .searchbox{flex:1;width:auto;min-width:145px}
+ .searchbox{flex:1 1 100%;width:100%;min-width:0}
  .title-row{align-items:flex-start;flex-direction:column;gap:12px;margin-bottom:17px}
  .title-row h1{font-size:29px;letter-spacing:-1.1px}
  .hero-grid,.middle,.two{grid-template-columns:minmax(0,1fr)}
@@ -277,9 +277,9 @@ body{overflow-x:clip}
 }
 
 /* One-tap browser location control, visually integrated with place search. */
-.searchbox input{padding-right:47px}
-.location-action{position:absolute;z-index:2;right:5px;top:5px;width:29px;height:29px;display:grid;place-items:center;border:1px solid transparent;border-radius:7px;background:#edf4eb;color:#286747;padding:0;transition:background .15s,border-color .15s,color .15s}
-.location-action svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.searchbox input{padding-right:132px}
+.location-action{position:absolute;z-index:2;right:5px;top:5px;height:29px;min-width:120px;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid transparent;border-radius:7px;background:#edf4eb;color:#286747;padding:0 8px;transition:background .15s,border-color .15s,color .15s;font-size:8px;font-weight:800;white-space:nowrap}
+.location-action svg{width:15px;height:15px;flex:0 0 15px;display:block;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .location-action:hover{background:#dfeedd;border-color:#c8dfc9;color:#174d32}
 .location-action:disabled{opacity:.58;cursor:wait}
 .location-action.locating svg{animation:locationPulse 1s ease-in-out infinite}
@@ -307,7 +307,7 @@ body{overflow-x:clip}
 </aside>
 <main class="main">
  <header class="topbar"><div class="crumb"><span data-i18n="crumb">CITY AIR</span> / <b id="crumb">Air briefing</b></div><div class="tools">
-  <div class="searchbox"><input id="topSearch" autocomplete="off" placeholder="Search a city or locality…" data-i18n-placeholder="searchPlaceholder"><button class="location-action" type="button" id="myLocation" aria-label="Use my location" title="Use my location"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/><path d="M12 1v2M3 10H1M23 10h-2"/></svg></button><div class="suggestions" id="suggestions"></div></div>
+  <div class="searchbox"><input id="topSearch" autocomplete="off" placeholder="Search a city or locality…" data-i18n-placeholder="searchPlaceholder"><button class="location-action" type="button" id="myLocation" aria-label="Use my location" title="Use my location"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/><path d="M12 1v2M3 10H1M23 10h-2"/></svg><span data-i18n="myLocation">Use my location</span></button><div class="suggestions" id="suggestions"></div></div>
   <select class="select" id="language" aria-label="Language"><option value="en">EN</option><option value="hi">हिन्दी</option></select>
   <select class="select" id="alertThreshold" aria-label="Alert threshold"><option value="100">AQI 100+</option><option value="150" selected>AQI 150+</option><option value="200">AQI 200+</option><option value="300">AQI 300+</option></select><button class="toolbtn" id="alertButton" data-i18n="alerts">Set alert</button>
   <button class="toolbtn primary" id="refresh">↻ <span data-i18n="refresh">Refresh</span></button>
