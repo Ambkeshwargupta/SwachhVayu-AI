@@ -144,14 +144,14 @@ Official references:
 
 ### 3.6 Generative AI explanation service
 
-VayuGuard's Air Guide uses Google's Gemini API through a Cloudflare Worker. The configured model is `gemini-3.6-flash`. The Worker uses Google's asynchronous **Interactions API** rather than holding an HTTP request open while a long generation completes.
+VayuGuard's Air Guide uses Google's Gemini API through a Cloudflare Worker. The configured model is `gemini-3.6-flash`. The Worker calls the Gemini Interactions API synchronously with `store:false`, so the browser receives the completed response directly rather than creating a background task and polling for its result.
 
 Request path:
 1. The visitor types a question and presses **Send** in the Air Guide.
 2. The browser sends the question, selected language and a deliberately limited context packet to the Worker endpoint `POST /ask`.
-3. The Worker validates and normalises the question/context fields, applies a Cloudflare rate-limit binding, then creates a background interaction with `POST /v1beta/interactions`.
-4. Gemini immediately returns an interaction ID. The Worker returns that task ID to the browser; the browser polls the Worker's `GET /status/{taskId}` endpoint, which checks the Gemini interaction status.
-5. Once Gemini marks the interaction completed, the Worker returns generated text to the browser. One retry is allowed only for provider failures explicitly marked retryable. `RESOURCE_EXHAUSTED` quota failures are not retried because repeated attempts would consume more request quota.
+3. The Worker validates and normalises the question/context fields, applies a Cloudflare rate-limit binding, then calls Google's `POST /v1beta/interactions` endpoint with the selected model, system instruction and `store:false`.
+4. Gemini returns the completed interaction in the same request. The Worker extracts text from the interaction's `output_text` or `model_output` steps and returns it to the browser.
+5. The frontend displays the response or a specific API/quota error. There is no background-task polling and no automatic retry after a quota failure.
 6. The Gemini API key remains in Cloudflare's encrypted Worker secret store; it is never shipped in the static site.
 
 Context packet fields:
@@ -171,16 +171,15 @@ Security controls include:
 - Question length and request-body bounds.
 - Cloudflare Worker rate-limit binding configured for 8 requests per minute per client IP within each Cloudflare location. Cloudflare documents this as approximate and location-local, not a strict global quota.
 - No prompt/response logging in the Worker code.
-- The browser receives generated text only; the Gemini provider/model label is returned with the response.
+- `store:false` is sent to Gemini so this request does not create a stored Interactions API record. Google still processes the request under the applicable Gemini API terms and data handling policies.
 
-Privacy note: when a visitor asks a question, the question and limited forecast context are sent to Google Gemini for processing. Precise device coordinates are not sent in this AI context packet. The application does not maintain a separate chat history. However, the Interactions API uses `background=true` and `store=true` (required for polling), so Google retains the interaction by default for 1 day on the Free tier and 55 days on the Paid tier. On Paid tier, a shorter retention window can be selected in AI Studio. The app's own Worker does not log prompts or responses.
-
-The deployment workflow requires GitHub repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, in addition to the existing `GEMINI_API_KEY`. It deploys the Worker, synchronises the Gemini secret, checks the Worker health endpoint without consuming a Gemini generation request, and writes the resulting Worker URL into the public `ai-config.js` file. Live model inference still depends on the Google project's available quota and is tested manually when quota permits. The endpoint URL is public by design; the Gemini API key is not.
+The deployment workflow requires GitHub repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, in addition to the existing `GEMINI_API_KEY`. It deploys the Worker, synchronises the Gemini secret, checks the Worker health endpoint without consuming a Gemini generation request, and writes the resulting Worker URL into the public `ai-config.js` file. Live model inference still depends on the Google project's available quota and must be tested with a user-submitted question when quota permits. The endpoint URL is public by design; the Gemini API key is not.
 
 References:
 - Gemini API overview and Interactions API: https://ai.google.dev/gemini-api/docs
-- Gemini background execution and polling: https://ai.google.dev/gemini-api/docs/get-started
+- Gemini model and synchronous Interactions examples: https://ai.google.dev/gemini-api/docs/get-started
 - Cloudflare Workers GitHub Actions deployment: https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/
+
 
 ## 4. What each calculation means
 
