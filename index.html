@@ -604,9 +604,8 @@ function useMyLocation(){
   $("topSearch").value="";
   $("suggestions").classList.remove("show");
   $("suggestions").innerHTML="";
-  const requestId=++S.locationRequestId;
+  const requestId=S.locationRequestId+1;
   setCurrent({lat:lat,lon:lon,name:t("resolvingArea"),isDeviceLocation:true});
-  S.locationRequestId=requestId;
   S.locationNameResolved=false;
   updateAreaLabels();
   try{
@@ -636,7 +635,7 @@ function useMyLocation(){
   else if(error&&error.code===2)toast(t("locationUnavailable"));
   else if(error&&error.code===3)toast(t("locationTimeout"));
   else toast(t("locationError"));
- },{enableHighAccuracy:false,timeout:18000,maximumAge:300000});
+ },{enableHighAccuracy:false,timeout:18000,maximumAge:0});
 }
 $("myLocation").addEventListener("click",useMyLocation);
 
