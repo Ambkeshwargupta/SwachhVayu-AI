@@ -750,6 +750,20 @@ h1{
  .source-count{font-size:8px;padding:7px}
  .source-empty b{font-size:11px}
 }
+
+/* Resolve older indoor-panel selectors: the journal surfaces take precedence. */
+.page#page-indoor > .indoor-primary-grid.grid.two:nth-of-type(2) > .room-guide-card.card:first-child{
+ background:linear-gradient(145deg,#fbf7e9 0%,#f4f1e2 65%,#e8efe0 100%);
+ border-color:#d8dfcc;padding:25px 26px 21px;
+}
+.page#page-indoor > .indoor-primary-grid.grid.two:nth-of-type(2) > .source-panel.card:nth-child(2){
+ background:
+  radial-gradient(circle at 100% 0%,rgba(201,239,121,.14),transparent 36%),
+  linear-gradient(145deg,#0b3023 0%,#12452f 58%,#0e3829 100%);
+ border-color:#2b6042;color:#eff7eb;
+}
+.page#page-indoor > .indoor-primary-grid.grid.two:nth-of-type(2) > .source-panel.card:nth-child(2) h2{color:#f8f9ed}
+.page#page-indoor > .indoor-primary-grid.grid.two:nth-of-type(2) > .source-panel.card:nth-child(2) .source-panel-sub{color:#c1d7c5}
 </style>
 </head>
 <body>
