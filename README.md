@@ -55,6 +55,7 @@ Air-quality apps already do a good job of showing numbers, maps and alerts. Vayu
 - [Open-Meteo Air Quality API](https://open-meteo.com/en/docs/air-quality-api), using the **CAMS Global** domain for modelled outdoor pollutant concentrations and U.S. AQI fields.
 - [Open-Meteo Forecast API](https://open-meteo.com/en/docs) for current wind speed and relative humidity.
 - [Open-Meteo Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for place-name search.
+- [BigDataCloud free client-side reverse-geocoding API](https://www.bigdatacloud.com/docs/article/why-is-reverse-geocoding-api-free) to turn the visitor's permissioned, current device coordinates into a readable locality/city label. This service is used only to name the area; it does not provide the air-quality forecast.
 - [EPA Guide to Air Cleaners in the Home](https://www.epa.gov/indoor-air-quality-iaq/guide-air-cleaners-home) and [CDC/NIOSH filtering facepiece respirator guidance](https://www.cdc.gov/niosh/ppe/respirators/ffr.html).
 - [CPCB National AQI method](https://app.cpcbccr.com/ccr_docs/About_AQI.pdf), [Government of India's real-time AQI dataset page](https://www.data.gov.in/resource/real-time-air-quality-index-various-locations) and [WHO 2021 Air Quality Guidelines](https://www.who.int/publications/i/item/9789240034228) are linked as authoritative references, not silently substituted into the model output.
 
@@ -111,7 +112,7 @@ GitHub Pages is configured to deploy through the workflow in `.github/workflows/
 ## Privacy and security
 
 - Saved places, household routines, household settings, checklist state, alert preferences and language preference are stored in the visitor's browser using local storage.
-- Browser location is requested only after the visitor selects **Use my location** and grants permission. Coordinates are sent to Open-Meteo to fetch the forecast, held in the active page session and excluded from the persistent forecast cache. They are stored in the saved-place list only if the visitor explicitly chooses **Save place**.
+- Browser location is requested only after the visitor selects **Use my location** and grants permission. Coordinates are sent to Open-Meteo for the forecast and to BigDataCloud's free client-side reverse-geocoder to resolve a readable area name. BigDataCloud says it observes the requesting IP alongside the current coordinates and aggregates those pairings anonymously to improve IP-geolocation data. Coordinates are held in the active page session and excluded from the persistent forecast cache. They are stored in the saved-place list only if the visitor explicitly chooses **Save place**.
 - There is no login, profile backend or server-side storage in this prototype.
 - Avoid entering sensitive health or personal details, especially on shared devices.
 - Public browser code contains no private API keys. The air-quality, weather and geocoding requests use public endpoints.
