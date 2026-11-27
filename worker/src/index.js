@@ -45,6 +45,10 @@ function json(data, status, origin) {
   return new Response(JSON.stringify(data), { status, headers });
 }
 
+function hasGeminiKey(env) {
+  return typeof env.GEMINI_API_KEY === "string" && env.GEMINI_API_KEY.trim().length > 0;
+}
+
 function cleanString(value, max = 160) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
 }
@@ -113,7 +117,7 @@ export default {
         status: "ok",
         service: "VayuGuard Gemini assistant",
         model: MODEL,
-        ready: Boolean(env.GEMINI_API_KEY)
+        ready: hasGeminiKey(env)
       }, 200, origin);
     }
 
@@ -121,7 +125,7 @@ export default {
       return json({ error: "Not found." }, 404, origin);
     }
 
-    if (!env.GEMINI_API_KEY) {
+    if (!hasGeminiKey(env)) {
       return json({ error: "The Gemini service is not configured yet." }, 503, origin);
     }
 
