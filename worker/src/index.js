@@ -130,6 +130,18 @@ function interactionFailureReason(data) {
   return "The provider marked this interaction as failed without a detailed message.";
 }
 
+function interactionFailureCode(data) {
+  const issue = data && (data.error || (Array.isArray(data.errors) ? data.errors[0] : null));
+  return cleanString(issue && (issue.code || issue.status), 60).toUpperCase();
+}
+
+function isRetryableInteractionFailure(data) {
+  const code = interactionFailureCode(data);
+  const message = interactionFailureReason(data).toLowerCase();
+  return ["INTERNAL", "UNAVAILABLE", "RESOURCE_EXHAUSTED", "DEADLINE_EXCEEDED"].includes(code) ||
+    (code === "INVALID_ARGUMENT" && message.includes("there was a problem processing your request"));
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin") || "";
@@ -179,7 +191,11 @@ export default {
           15000
         );
         if (!response.ok) return json({ error: providerError(response.status, data) }, 502, origin);
-        if (data.status === "failed") return json({ error: "Gemini interaction failed: " + interactionFailureReason(data) }, 502, origin);
+        if (data.status === "failed") return json({
+          error: "Gemini interaction failed: " + interactionFailureReason(data),
+          providerCode: interactionFailureCode(data),
+          retryable: isRetryableInteractionFailure(data)
+        }, 502, origin);
         if (data.status === "completed") {
           const answer = responseText(data);
           if (!answer) return json({ error: "Gemini completed the interaction without a text answer. Please try again." }, 502, origin);
