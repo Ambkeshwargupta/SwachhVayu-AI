@@ -789,6 +789,11 @@ h1{
 #page-guide .quick button{font-size:11px;padding:9px 12px}
 @media(max-width:780px){.ai-service-status{flex-wrap:wrap}.ai-model-pill{margin-left:auto}#page-guide .bubble{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.ai-service-status[data-state="checking"] .ai-status-dot{animation:none}}
+
+.ai-privacy-note{margin:12px 2px 0;padding:10px 12px;border-left:3px solid #c5d78a;background:#f0f1e3;border-radius:0 8px 8px 0;color:#657563;font-size:10px;line-height:1.65}
+.ai-service-status[data-state="quota"]{background:#f6e9dc;border-color:#e8cbb2}
+.ai-service-status[data-state="quota"] .ai-status-dot{background:#ca7449;box-shadow:0 0 0 4px rgba(202,116,73,.14)}
+.ai-service-status[data-state="quota"] .ai-status-copy b{color:#7b412b}
 </style>
 </head>
 <body>
@@ -921,7 +926,7 @@ h1{
 
  <section class="page" id="page-guide">
   <div class="title-row"><div><div class="eyebrow" data-i18n="guideEyebrow">CLEAR ANSWERS, NOT AI THEATRE</div><h1 data-i18n="guideTitle">A practical guide to the air around you.</h1><p class="sub" data-i18n="guideSub">Ask a question about today's forecast, indoor sources, activity timing or how to interpret the numbers. Answers use explicit rules and the data currently loaded on this page.</p></div></div>
-  <div class="grid two"><div class="card ai-chat-card"><h2 data-i18n="askGuide">Ask VayuGuard AI</h2><div class="ai-service-status" id="aiServiceStatus" data-state="pending" role="status" aria-live="polite"><span class="ai-status-dot"></span><span class="ai-status-copy"><b id="aiServiceText">Gemini connection pending</b><small id="aiServiceDetail">Secure AI service · setup in progress</small></span><span class="ai-model-pill">GEMINI 3.8 FLASH</span></div><div class="chat" id="chat"><div class="bubble guide" id="welcomeBubble">Hello. I can explain the loaded forecast, show what is driving the modelled index and suggest practical source-control steps. I will say when the data cannot answer a question.</div></div><div class="chatline"><input id="question" placeholder="Ask a question…" data-i18n-placeholder="askPlaceholder"><button class="btn" id="sendQuestion" data-i18n="send">Send</button></div><div class="quick"><button data-q="What is driving the current reading?" data-i18n="quickDriver">What's driving the reading?</button><button data-q="What can I change indoors?" data-i18n="quickIndoor">Indoor air steps</button><button data-q="When should I go outside?" data-i18n="quickTime">Best time to go out?</button></div></div>
+  <div class="grid two"><div class="card ai-chat-card"><h2 data-i18n="askGuide">Ask VayuGuard AI</h2><div class="ai-service-status" id="aiServiceStatus" data-state="pending" role="status" aria-live="polite"><span class="ai-status-dot"></span><span class="ai-status-copy"><b id="aiServiceText">Gemini connection pending</b><small id="aiServiceDetail">Secure AI service · setup in progress</small></span><span class="ai-model-pill">GEMINI 3.6 FLASH</span></div><div class="chat" id="chat"><div class="bubble guide" id="welcomeBubble">Hello. I can explain the loaded forecast, show what is driving the modelled index and suggest practical source-control steps. I will say when the data cannot answer a question.</div></div><div class="chatline"><input id="question" placeholder="Ask a question…" data-i18n-placeholder="askPlaceholder"><button class="btn" id="sendQuestion" data-i18n="send">Send</button></div><div class="quick"><button data-q="What is driving the current reading?" data-i18n="quickDriver">What's driving the reading?</button><button data-q="What can I change indoors?" data-i18n="quickIndoor">Indoor air steps</button><button data-q="When should I go outside?" data-i18n="quickTime">Best time to go out?</button></div><p class="ai-privacy-note" data-i18n="aiPrivacyNote">Your question and limited forecast context are sent to Google Gemini. Background interactions are retained by Google (Free tier: 1 day; Paid tier: 55 days by default). Do not enter sensitive personal or health details.</p></div>
   <div class="card"><h2 data-i18n="guideLimits">What this guide can and cannot do</h2><div class="list"><div class="rowitem"><div class="rowico">✓</div><div><b data-i18n="guideCan">It can</b><p data-i18n="guideCanText">Explain the model forecast, pollutant fields, relative lower-value hours, household source-control practices and data limitations.</p></div></div><div class="rowitem"><div class="rowico">—</div><div><b data-i18n="guideCannot">It cannot</b><p data-i18n="guideCannotText">Measure your room, know your personal exposure, diagnose symptoms, certify a route as safe or replace official monitoring and health advice.</p></div></div></div></div></div>
  </section>
 
@@ -995,6 +1000,21 @@ Object.assign(dict.hi,{
  sizingKicker:"विज्ञापन नहीं, कमरे का आकार देखें",
  whenOutdoorsKicker:"जब बाहर जाना ज़रूरी हो",
  sourceFirstKicker:"सबसे ज़रूरी सिद्धांत"
+});
+
+Object.assign(dict.en,{
+ guideEyebrow:"LIVE ENVIRONMENTAL ASSISTANT",
+ guideTitle:"Ask VayuGuard about the air around you.",
+ guideSub:"Ask about your selected area, current pollutant signals or practical next steps. Gemini uses the forecast loaded in this page to create a contextual answer.",
+ askGuide:"Ask VayuGuard AI",
+ aiPrivacyNote:"Your question and limited forecast context are sent to Google Gemini. Background interactions are retained by Google (Free tier: 1 day; Paid tier: 55 days by default). Do not enter sensitive personal or health details."
+});
+Object.assign(dict.hi,{
+ guideEyebrow:"लाइव पर्यावरण सहायक",
+ guideTitle:"अपने आसपास की हवा के बारे में VayuGuard से पूछें।",
+ guideSub:"अपने चुने हुए क्षेत्र, प्रदूषक संकेतों या व्यावहारिक अगले कदमों के बारे में पूछें। Gemini इस पेज पर लोड पूर्वानुमान के आधार पर संदर्भ सहित जवाब तैयार करता है।",
+ askGuide:"VayuGuard AI से पूछें",
+ aiPrivacyNote:"आपका सवाल और सीमित वायु-पूर्वानुमान संदर्भ Google Gemini को भेजे जाते हैं। Google बैकग्राउंड इंटरैक्शन को सुरक्षित रखता है (Free tier: 1 दिन; Paid tier: डिफ़ॉल्ट रूप से 55 दिन)। संवेदनशील व्यक्तिगत या स्वास्थ्य जानकारी न डालें।"
 });
 
 let LANG=localStorage.getItem("vg_lang")==="hi"?"hi":"en";
@@ -1305,31 +1325,37 @@ function setAiStatus(state,title,detail){
 }
 function aiStatusCopy(state){
  if(LANG==="hi"){
-  if(state==="connected")return ["Gemini AI जुड़ा है","लाइव Gemini 3.8 Flash · सुरक्षित सर्वर कनेक्शन"];
-  if(state==="checking")return ["Gemini कनेक्शन जांच रहे हैं","सुरक्षित AI सेवा से संपर्क हो रहा है"];
-  if(state==="error")return ["Gemini अभी उपलब्ध नहीं है","सेवा या API कॉन्फ़िगरेशन जांचें और फिर कोशिश करें"];
-  return ["Gemini बैकएंड की तैनाती बाकी है","API कुंजी ब्राउज़र में नहीं रखी जाती · सुरक्षित सर्वर सेटअप जारी"];
+  if(state==="connected")return ["Gemini gateway ऑनलाइन है","सुरक्षित सर्वर और API key तैयार · जवाब Google की मॉडल quota पर निर्भर हैं"];
+  if(state==="checking")return ["सुरक्षित AI कनेक्शन जांच रहे हैं","Gemini gateway से संपर्क हो रहा है"];
+  if(state==="quota")return ["Gemini project quota पूरी हो गई","AI Studio में RPM / TPM / RPD सीमा जांचें · अपने आप दोबारा अनुरोध नहीं भेजा जाएगा"];
+  if(state==="error")return ["Gemini सेवा अभी उपलब्ध नहीं है","सुरक्षित backend या API कॉन्फ़िगरेशन जांचें"];
+  return ["Gemini backend तैनात नहीं है","API key सार्वजनिक वेबसाइट में नहीं रखी जाती"];
  }
- if(state==="connected")return ["Gemini AI connected","Live Gemini 3.8 Flash · secure server connection"];
- if(state==="checking")return ["Checking Gemini connection","Contacting the secure AI service"];
- if(state==="error")return ["Gemini is temporarily unavailable","Check the service or API configuration and try again"];
- return ["Gemini backend deployment pending","The API key stays off the browser · secure server setup in progress"];
+ if(state==="connected")return ["Gemini gateway online","Secure backend and API key are ready · generation still depends on Google's model quota"];
+ if(state==="checking")return ["Checking secure AI connection","Contacting the Gemini gateway"];
+ if(state==="quota")return ["Gemini project quota reached","Check RPM / TPM / RPD in AI Studio · no automatic retry will be sent"];
+ if(state==="error")return ["Gemini service is unavailable","Check the secure backend or API configuration"];
+ return ["Gemini backend not deployed","The API key is never placed in the public website"];
 }
 function applyAiStatus(state){
  const copy=aiStatusCopy(state);setAiStatus(state,copy[0],copy[1]);
  const welcome=$("welcomeBubble");if(!welcome)return;
  if(LANG==="hi"){
   welcome.textContent=state==="connected"
-   ?"नमस्ते! मैं Gemini द्वारा संचालित VayuGuard सहायक हूं। मैं आपके चुने हुए क्षेत्र के मौजूदा मॉडल पूर्वानुमान, प्रदूषक संकेतों और व्यावहारिक अगले कदमों के बारे में जवाब दे सकता हूं।"
-   :state==="error"
-    ?"Gemini सेवा अभी जवाब नहीं दे रही है। थोड़ी देर बाद फिर कोशिश करें। यह सहायक केवल उपलब्ध पेज डेटा के आधार पर जवाब देगा।"
-    :"Gemini का सुरक्षित बैकएंड अभी तैनात नहीं हुआ है। इसके तैनात होने के बाद आप अपने मौजूदा एयर पूर्वानुमान के बारे में लाइव AI जवाब पूछ पाएंगे।";
+   ?"नमस्ते! सुरक्षित Gemini gateway जुड़ा है। मैं आपके चुने हुए क्षेत्र के मौजूदा मॉडल पूर्वानुमान और प्रदूषक संकेतों की व्याख्या कर सकता हूं। जवाब उपलब्ध Google project quota पर निर्भर होंगे।"
+   :state==="quota"
+    ?"Google Gemini project की अनुरोध सीमा पूरी हो गई है। AI Studio में RPM, TPM और RPD जांचें। सीमा reset या billing tier update होने तक AI जवाब उपलब्ध नहीं होंगे।"
+    :state==="error"
+     ?"Gemini सेवा अभी जवाब नहीं दे रही है। थोड़ी देर बाद फिर कोशिश करें।"
+     :"Gemini का सुरक्षित backend अभी तैनात नहीं है।";
  }else{
   welcome.textContent=state==="connected"
-   ?"Hello! I am VayuGuard's Gemini-powered assistant. I can explain the current model forecast, pollutant signals and practical next steps for your selected area."
-   :state==="error"
-    ?"The Gemini service is not responding right now. Please try again shortly. Answers will use only the current page context supplied to the service."
-    :"VayuGuard's secure Gemini backend has not been deployed yet. Once it is live, you can ask questions and receive dynamic AI answers grounded in your current air forecast.";
+   ?"Hello! The secure Gemini gateway is online. I can explain the current model forecast and pollutant signals for your selected area. Actual responses depend on the Google project's available quota."
+   :state==="quota"
+    ?"The Google Gemini project has reached a request quota. Check RPM, TPM and RPD in AI Studio. AI answers will resume after the quota resets or the billing tier is updated."
+    :state==="error"
+     ?"The Gemini service is not responding right now. Please try again later."
+     :"VayuGuard's secure Gemini backend has not been deployed yet.";
  }
 }
 async function checkAiService(){
@@ -1439,12 +1465,14 @@ async function sendQuestion(q){
   const result=await askGemini(q);
   pending.textContent=result.answer;
   pending.classList.remove("thinking");
-  pending.dataset.provider="Gemini 3.8 Flash · live response";
+  pending.dataset.provider="Gemini 3.6 Flash · live response";
   applyAiStatus("connected");
  }catch(error){
-  pending.textContent=(LANG==="hi"?"AI जवाब उपलब्ध नहीं: ":"AI answer unavailable: ")+(error&&error.message?error.message:(LANG==="hi"?"कृपया फिर कोशिश करें।":"Please try again."));
+  const message=error&&error.message?error.message:(LANG==="hi"?"कृपया फिर कोशिश करें।":"Please try again.");
+  pending.textContent=(LANG==="hi"?"AI जवाब उपलब्ध नहीं: ":"AI answer unavailable: ")+message;
   pending.classList.remove("thinking");
-  applyAiStatus(AI_API_ENDPOINT?"error":"pending");
+  const quotaFailure=/RESOURCE_EXHAUSTED|quota|requests per minute|requests per day|rate limit/i.test(message);
+  applyAiStatus(quotaFailure?"quota":AI_API_ENDPOINT?"error":"pending");
  }finally{
   send.disabled=false;field.disabled=false;field.focus();
   $("chat").scrollTop=$("chat").scrollHeight;
