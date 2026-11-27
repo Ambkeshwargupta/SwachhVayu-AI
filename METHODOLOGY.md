@@ -295,6 +295,16 @@ The latest visual pass responds to product feedback that the earlier neutral das
 - **Readable everywhere:** body copy, form controls, chart labels and supporting notes were increased; responsive layouts keep the chart and comparison panels usable on narrow screens.
 - **Consistent interaction:** forms, alerts, chips, location controls, quick actions, keyboard focus, reduced motion and mobile behaviour share one design system.
 
+### Indoor air page treatment
+
+The Indoor Air workspace now follows the same Human Field Journal system without simply repeating the dashboard cards:
+
+- A warm, paper-toned room guide presents kitchen, bedroom, living-space and whole-home actions as four clearly numbered room entries with consistent iconography.
+- A deep-forest source-audit panel provides seven selectable household source categories. Selection state and a progress count are visible immediately; a concise, numbered action list is generated from the selected sources.
+- The source-audit choices are stored only in browser local storage under a separate key. They are not transmitted to an API.
+- The room guide and source audit use a fixed two-column `minmax(0,...)` layout at wide widths and collapse to one column at narrower widths. This prevents the source panel from being cut off by intrinsic grid sizing.
+- Equipment guidance uses warm, differentiated cards for room sizing, CADR/filter basics, respirator limitations and source-first practices. The CADR helper remains an arithmetic illustration, not a device recommendation or certification.
+
 The intent is not to imitate a competitor's screen. It is to combine AirNow's immediate "current air → primary pollutant → what to do" hierarchy, IQAir's auto-location/forecast/alert discovery, OpenAQ's source-aware data presentation and Google Air Quality's now/history/forecast mental model into a distinct, calmer product.
 
 
