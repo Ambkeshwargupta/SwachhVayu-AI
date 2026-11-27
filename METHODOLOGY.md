@@ -144,14 +144,14 @@ Official references:
 
 ### 3.6 Generative AI explanation service
 
-VayuGuard's Air Guide uses Google's Gemini API through a Cloudflare Worker. The configured model is `gemini-3.8-flash`. The Worker uses Google's asynchronous **Interactions API** rather than holding an HTTP request open while a long generation completes.
+VayuGuard's Air Guide uses Google's Gemini API through a Cloudflare Worker. The configured model is `gemini-3.6-flash`. The Worker uses Google's asynchronous **Interactions API** rather than holding an HTTP request open while a long generation completes.
 
 Request path:
 1. The visitor types a question and presses **Send** in the Air Guide.
 2. The browser sends the question, selected language and a deliberately limited context packet to the Worker endpoint `POST /ask`.
 3. The Worker validates and normalises the question/context fields, applies a Cloudflare rate-limit binding, then creates a background interaction with `POST /v1beta/interactions`.
 4. Gemini immediately returns an interaction ID. The Worker returns that task ID to the browser; the browser polls the Worker's `GET /status/{taskId}` endpoint, which checks the Gemini interaction status.
-5. Once Gemini marks the interaction completed, the Worker returns generated text to the browser. One retry is allowed for provider failures explicitly marked retryable.
+5. Once Gemini marks the interaction completed, the Worker returns generated text to the browser. One retry is allowed only for provider failures explicitly marked retryable. `RESOURCE_EXHAUSTED` quota failures are not retried because repeated attempts would consume more request quota.
 6. The Gemini API key remains in Cloudflare's encrypted Worker secret store; it is never shipped in the static site.
 
 Context packet fields:
@@ -173,9 +173,9 @@ Security controls include:
 - No prompt/response logging in the Worker code.
 - The browser receives generated text only; the Gemini provider/model label is returned with the response.
 
-Privacy note: when a visitor asks a question, the question and limited forecast context are sent to Google Gemini for processing. Precise device coordinates are not sent in this AI context packet. The current prototype does not save Air Guide conversations in an app account or server-side chat history.
+Privacy note: when a visitor asks a question, the question and limited forecast context are sent to Google Gemini for processing. Precise device coordinates are not sent in this AI context packet. The application does not maintain a separate chat history. However, the Interactions API uses `background=true` and `store=true` (required for polling), so Google retains the interaction by default for 1 day on the Free tier and 55 days on the Paid tier. On Paid tier, a shorter retention window can be selected in AI Studio. The app's own Worker does not log prompts or responses.
 
-The deployment workflow requires GitHub repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, in addition to the existing `GEMINI_API_KEY`. It deploys the Worker, synchronises the Gemini secret, checks a live AI smoke-test response and writes the resulting Worker URL into the public `ai-config.js` file. The endpoint URL is public by design; the Gemini API key is not.
+The deployment workflow requires GitHub repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, in addition to the existing `GEMINI_API_KEY`. It deploys the Worker, synchronises the Gemini secret, checks the Worker health endpoint without consuming a Gemini generation request, and writes the resulting Worker URL into the public `ai-config.js` file. Live model inference still depends on the Google project's available quota and is tested manually when quota permits. The endpoint URL is public by design; the Gemini API key is not.
 
 References:
 - Gemini API overview and Interactions API: https://ai.google.dev/gemini-api/docs
@@ -354,7 +354,7 @@ The intent is not to imitate a competitor's screen. It is to combine AirNow's im
 - No private API credentials in the frontend.
 - The Gemini API key is stored as an encrypted Cloudflare Worker secret. The static page contains only the public Worker endpoint URL.
 - When the visitor submits an Air Guide question, the prompt and selected-area forecast context packet are sent to Cloudflare and Google Gemini. Precise device latitude/longitude is not included in this AI packet.
-- The application does not collect AI chat history into an account or server-side user profile. The current conversation remains in the active browser page only.
+- The application does not collect AI chat history into an account or its own server-side user profile. The current conversation remains in the active browser page only; the Google Gemini Interactions API stores background interaction records as described in section 3.6 (default retention: Free tier 1 day; Paid tier 55 days).
 - Local preferences are stored in local storage.
 - Place-name search uses Open-Meteo Geocoding. When the visitor explicitly uses browser geolocation, current coordinates are also sent directly from the browser to BigDataCloud's free reverse-geocoding endpoint to resolve a visible locality/city label. Its documented IP-and-coordinate aggregation practice is described in section 3.4.
 - The optional **Use my location** button calls the browser Geolocation API only after a user click. Browser permission is required; denied, unavailable, timed-out and insecure-context cases show an explanatory message.
