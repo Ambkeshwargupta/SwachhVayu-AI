@@ -47,7 +47,7 @@ jobs:
           fi
           echo "WORKER_BASE_URL=$WORKER_BASE_URL" >> "$GITHUB_ENV"
 
-      - name: Verify Worker health and live Gemini response
+      - name: Verify Worker health and encrypted Gemini secret
         shell: bash
         run: |
           set -euo pipefail
@@ -56,87 +56,14 @@ jobs:
               if jq -e '.ready == true' "$RUNNER_TEMP/vg-health.json" >/dev/null; then break; fi
             fi
             if [[ "$attempt" == "10" ]]; then
-              echo "Worker health check did not report the Gemini secret as ready." >&2
+              echo "Worker health check did not confirm the encrypted Gemini secret." >&2
               cat "$RUNNER_TEMP/vg-health.json" || true
               exit 1
             fi
             sleep 3
           done
-          cat > "$RUNNER_TEMP/vg-smoke-request.json" <<'JSON'
-          {
-            "question": "Explain this illustrative air-quality example in two short sentences. What does the index represent, and what is one practical next step?",
-            "language": "en",
-            "context": {
-              "area": "VayuGuard smoke test area",
-              "aqi": 91,
-              "category": "Moderate",
-              "leadingPollutant": "PM2.5",
-              "leadingSubIndex": 91,
-              "pollutants": {"PM2.5": 27.7, "PM10": 29.7, "NO2": 0.9, "O3": 121, "SO2": 5.8, "CO": 238},
-              "weather": {"windKmh": 5.6, "humidityPercent": 38},
-              "next24Hours": []
-            }
-          }
-          JSON
-          run_smoke_generation() {
-            local ask_code task_id poll_code status retryable
-            ask_code="$(curl --silent --show-error --output "$RUNNER_TEMP/vg-smoke-response.json" --write-out '%{http_code}' "$WORKER_BASE_URL/ask" \
-              -H "Origin: https://ambkeshwargupta.github.io" \
-              -H "Content-Type: application/json" \
-              --data-binary "@$RUNNER_TEMP/vg-smoke-request.json")"
-            if [[ "$ask_code" != "200" && "$ask_code" != "202" ]]; then
-              echo "Gemini start request returned HTTP $ask_code." >&2
-              cat "$RUNNER_TEMP/vg-smoke-response.json" >&2 || true
-              return 1
-            fi
-            task_id="$(jq -r '.taskId // empty' "$RUNNER_TEMP/vg-smoke-response.json")"
-            if [[ -z "$task_id" ]]; then
-              jq -e '.provider == "Google Gemini" and (.answer | type == "string" and length > 20)' "$RUNNER_TEMP/vg-smoke-response.json" >/dev/null
-              return $?
-            fi
-            for attempt in $(seq 1 30); do
-              poll_code="$(curl --silent --show-error --output "$RUNNER_TEMP/vg-smoke-poll.json" --write-out '%{http_code}' "$WORKER_BASE_URL/status/$task_id" -H "Origin: https://ambkeshwargupta.github.io")"
-              status="$(jq -r '.status // empty' "$RUNNER_TEMP/vg-smoke-poll.json")"
-              if [[ "$poll_code" == "200" && "$status" == "completed" ]]; then
-                cp "$RUNNER_TEMP/vg-smoke-poll.json" "$RUNNER_TEMP/vg-smoke-response.json"
-                return 0
-              fi
-              if [[ "$poll_code" != "200" && "$poll_code" != "202" ]]; then
-                retryable="$(jq -r '.retryable // false' "$RUNNER_TEMP/vg-smoke-poll.json")"
-                if [[ "$retryable" == "true" ]]; then
-                  echo "Gemini reported a transient generation failure; provider response:"
-                  cat "$RUNNER_TEMP/vg-smoke-poll.json"
-                  return 10
-                fi
-                echo "Gemini status poll returned HTTP $poll_code." >&2
-                cat "$RUNNER_TEMP/vg-smoke-poll.json" >&2 || true
-                return 1
-              fi
-              sleep 3
-            done
-            echo "Gemini background interaction did not complete within the smoke-test window." >&2
-            return 1
-          }
-          smoke_success="false"
-          for generation_attempt in 1 2 3; do
-            if run_smoke_generation; then
-              smoke_success="true"
-              break
-            else
-              smoke_status=$?
-              if [[ "$smoke_status" -ne 10 ]]; then exit "$smoke_status"; fi
-              if [[ "$generation_attempt" -lt 3 ]]; then
-                echo "Starting retry $((generation_attempt + 1)) of 3 after a transient Gemini provider failure."
-                sleep 2
-              fi
-            fi
-          done
-          if [[ "$smoke_success" != "true" ]]; then
-            echo "Gemini smoke test failed after three background interactions." >&2
-            exit 1
-          fi
-          jq -e '.provider == "Google Gemini" and (.answer | type == "string" and length > 20)' "$RUNNER_TEMP/vg-smoke-response.json" >/dev/null
-          echo "Gemini live response verified. Provider: $(jq -r '.provider' "$RUNNER_TEMP/vg-smoke-response.json"); model: $(jq -r '.model' "$RUNNER_TEMP/vg-smoke-response.json")." >> "$GITHUB_STEP_SUMMARY"
+          echo "Worker is online and the Gemini key is configured. This check does not consume a Gemini generation request or verify model quota." >> "$GITHUB_STEP_SUMMARY"
+          echo "Configured model: $(jq -r '.model' "$RUNNER_TEMP/vg-health.json")" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure the frontend Worker URL
         shell: bash
