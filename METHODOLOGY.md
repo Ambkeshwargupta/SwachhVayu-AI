@@ -144,14 +144,15 @@ Official references:
 
 ### 3.6 Generative AI explanation service
 
-VayuGuard's Air Guide uses Google's Gemini API through a Cloudflare Worker. The current configured model is `gemini-3.8-flash`.
+VayuGuard's Air Guide uses Google's Gemini API through a Cloudflare Worker. The configured model is `gemini-3.8-flash`. The Worker uses Google's asynchronous **Interactions API** rather than holding an HTTP request open while a long generation completes.
 
 Request path:
 1. The visitor types a question and presses **Send** in the Air Guide.
-2. The browser sends the question, selected language and a deliberately limited context packet to the Worker.
-3. The Worker validates and normalises the question/context fields, applies a Cloudflare rate-limit binding, and calls Google's `generateContent` endpoint.
-4. The Worker returns the generated answer to the browser. The Gemini API key remains in Cloudflare's encrypted Worker secret store; it is never shipped in the static site.
-5. The frontend labels the connected model and displays a live response marker.
+2. The browser sends the question, selected language and a deliberately limited context packet to the Worker endpoint `POST /ask`.
+3. The Worker validates and normalises the question/context fields, applies a Cloudflare rate-limit binding, then creates a background interaction with `POST /v1beta/interactions`.
+4. Gemini immediately returns an interaction ID. The Worker returns that task ID to the browser; the browser polls the Worker's `GET /status/{taskId}` endpoint, which checks the Gemini interaction status.
+5. Once Gemini marks the interaction completed, the Worker returns generated text to the browser. One retry is allowed for provider failures explicitly marked retryable.
+6. The Gemini API key remains in Cloudflare's encrypted Worker secret store; it is never shipped in the static site.
 
 Context packet fields:
 - selected area display name (not precise latitude/longitude);
@@ -172,7 +173,14 @@ Security controls include:
 - No prompt/response logging in the Worker code.
 - The browser receives generated text only; the Gemini provider/model label is returned with the response.
 
-The deployment workflow requires GitHub repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, in addition to the existing `GEMINI_API_KEY`. It deploys the Worker, synchronises the Gemini secret and writes the resulting Worker URL into the public `ai-config.js` file. The endpoint URL is public by design; the Gemini API key is not.
+Privacy note: when a visitor asks a question, the question and limited forecast context are sent to Google Gemini for processing. Precise device coordinates are not sent in this AI context packet. The current prototype does not save Air Guide conversations in an app account or server-side chat history.
+
+The deployment workflow requires GitHub repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, in addition to the existing `GEMINI_API_KEY`. It deploys the Worker, synchronises the Gemini secret, checks a live AI smoke-test response and writes the resulting Worker URL into the public `ai-config.js` file. The endpoint URL is public by design; the Gemini API key is not.
+
+References:
+- Gemini API overview and Interactions API: https://ai.google.dev/gemini-api/docs
+- Gemini background execution and polling: https://ai.google.dev/gemini-api/docs/get-started
+- Cloudflare Workers GitHub Actions deployment: https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/
 
 ## 4. What each calculation means
 
