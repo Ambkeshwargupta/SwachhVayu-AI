@@ -112,7 +112,24 @@ Place selection resolves a place name into a latitude and longitude. The request
 
 Reference: https://open-meteo.com/en/docs/geocoding-api
 
-### 3.4 Official Indian station information
+### 3.4 Reverse geocoding of the current device location
+
+When a visitor explicitly selects **Use my location** and grants the browser's Geolocation permission, the browser obtains the current coordinates. VayuGuard then calls BigDataCloud's free client-side reverse-geocoding endpoint directly from the browser:
+
+- `https://api.bigdatacloud.net/data/reverse-geocode-client`
+- Query parameters: current `latitude`, `longitude`, and `localityLanguage` (`en` or `hi`).
+
+The application uses the returned `localityName`, `city`, `principalSubdivision` and `countryName` fields (deduplicated) to construct the visible current-area label. That label is displayed in the persistent top-bar area indicator and beside the dashboard briefing, while the chart context shows the same area name. Manually searched places instead carry the selected geocoding result and are labelled as a selected place.
+
+The provider documents that this free endpoint is for direct client-side use of the device's current, consented location only; it must not be used for cached, stored, third-party or server-side coordinates. It also explains that the service observes the requesting IP alongside the current coordinates and aggregates those pairings anonymously to improve and validate its IP-geolocation data. VayuGuard therefore calls it only after an explicit location-button action and does not send saved or searched coordinates to this endpoint.
+
+If reverse geocoding fails, the forecast still loads for the browser coordinates and the interface labels the area name as unavailable, showing the approximate coordinates instead. Device-derived coordinates are not written to VayuGuard's persistent forecast cache. A visitor must explicitly choose **Save place** to add a device location to the saved-place list.
+
+References:
+- BigDataCloud free client-side reverse-geocoding API and privacy explanation: https://www.bigdatacloud.com/docs/article/why-is-reverse-geocoding-api-free
+- Client field names and fair-use constraints: https://github.com/bigdatacloudapi/js-reverse-geocode-client
+
+### 3.5 Official Indian station information
 
 India's National AQI is published by CPCB and uses a distinct index framework. CPCB describes eight pollutants: PM10, PM2.5, NO2, SO2, CO, O3, NH3 and Pb. The highest relevant pollutant sub-index determines the overall AQI; the six categories are Good, Satisfactory, Moderately polluted, Poor, Very Poor and Severe.
 
@@ -297,7 +314,7 @@ The design aims to reduce the number of steps between looking up a location and 
 - No sign-in or server-side profile store.
 - No private API credentials in the frontend.
 - Local preferences are stored in local storage.
-- Geocoding and forecast calls send the searched coordinates to public Open-Meteo endpoints.
+- Place-name search uses Open-Meteo Geocoding. When the visitor explicitly uses browser geolocation, current coordinates are also sent directly from the browser to BigDataCloud's free reverse-geocoding endpoint to resolve a visible locality/city label. Its documented IP-and-coordinate aggregation practice is described in section 3.4.
 - The optional **Use my location** button calls the browser Geolocation API only after a user click. Browser permission is required; denied, unavailable, timed-out and insecure-context cases show an explanatory message.
 - Device-derived coordinates are held in the active page session and are not written to the persistent forecast cache by that request. A visitor may explicitly choose **Save place** to add the current location to the browser-local saved-place list.
 - Citizen report notes are not transmitted by the app.
@@ -353,5 +370,7 @@ This separation is the foundation for a credible product rather than a visually 
 10. OpenAQ platform: https://openaq.org/platform/
 11. OpenAQ API overview: https://docs.openaq.org/about/about
 12. WHO 2021 Global Air Quality Guidelines: https://www.who.int/publications/i/item/9789240034228
+13. BigDataCloud free client-side reverse geocoding and privacy: https://www.bigdatacloud.com/docs/article/why-is-reverse-geocoding-api-free
+14. BigDataCloud JavaScript client field reference and fair-use policy: https://github.com/bigdatacloudapi/js-reverse-geocode-client
 13. EPA Guide to Air Cleaners in the Home: https://www.epa.gov/indoor-air-quality-iaq/guide-air-cleaners-home
 14. CDC / NIOSH Filtering Facepiece Respirators: https://www.cdc.gov/niosh/ppe/respirators/ffr.html
