@@ -13,12 +13,12 @@ permissions:
 
 concurrency:
   group: vayuguard-ai-worker
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -40,6 +40,51 @@ jobs:
           : "${GEMINI_API_KEY:?Add GEMINI_API_KEY in GitHub Actions secrets}"
           npx --yes wrangler@latest deploy 2>&1 | tee "$RUNNER_TEMP/vayuguard-worker-deploy.log"
           printf '%s' "$GEMINI_API_KEY" | npx --yes wrangler@latest secret put GEMINI_API_KEY
+          WORKER_BASE_URL="$(grep -Eo 'https://[A-Za-z0-9.-]+\.workers\.dev' "$RUNNER_TEMP/vayuguard-worker-deploy.log" | tail -n1 || true)"
+          if [[ -z "$WORKER_BASE_URL" ]]; then
+            echo "Could not detect the workers.dev URL from Wrangler output." >&2
+            exit 1
+          fi
+          echo "WORKER_BASE_URL=$WORKER_BASE_URL" >> "$GITHUB_ENV"
+
+      - name: Verify Worker health and live Gemini response
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl --fail --silent --show-error "$WORKER_BASE_URL/health" -o "$RUNNER_TEMP/vg-health.json"; then
+              if jq -e '.ready == true' "$RUNNER_TEMP/vg-health.json" >/dev/null; then break; fi
+            fi
+            if [[ "$attempt" == "10" ]]; then
+              echo "Worker health check did not report the Gemini secret as ready." >&2
+              cat "$RUNNER_TEMP/vg-health.json" || true
+              exit 1
+            fi
+            sleep 3
+          done
+          cat > "$RUNNER_TEMP/vg-smoke-request.json" <<'JSON'
+          {
+            "question": "Explain this illustrative air-quality example in two short sentences. What does the index represent, and what is one practical next step?",
+            "language": "en",
+            "context": {
+              "area": "VayuGuard smoke test area",
+              "aqi": 91,
+              "category": "Moderate",
+              "leadingPollutant": "PM2.5",
+              "leadingSubIndex": 91,
+              "pollutants": {"PM2.5": 27.7, "PM10": 29.7, "NO2": 0.9, "O3": 121, "SO2": 5.8, "CO": 238},
+              "weather": {"windKmh": 5.6, "humidityPercent": 38},
+              "next24Hours": []
+            }
+          }
+          JSON
+          curl --fail --silent --show-error "$WORKER_BASE_URL/ask" \
+            -H "Origin: https://ambkeshwargupta.github.io" \
+            -H "Content-Type: application/json" \
+            --data-binary "@$RUNNER_TEMP/vg-smoke-request.json" \
+            -o "$RUNNER_TEMP/vg-smoke-response.json"
+          jq -e '.provider == "Google Gemini" and (.answer | type == "string" and length > 20)' "$RUNNER_TEMP/vg-smoke-response.json" >/dev/null
+          echo "Gemini live response verified. Provider: $(jq -r '.provider' "$RUNNER_TEMP/vg-smoke-response.json"); model: $(jq -r '.model' "$RUNNER_TEMP/vg-smoke-response.json")." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure the frontend Worker URL
         shell: bash
@@ -47,28 +92,28 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          WORKER_BASE_URL="$(grep -Eo 'https://[A-Za-z0-9.-]+\.workers\.dev' "$RUNNER_TEMP/vayuguard-worker-deploy.log" | tail -n1 || true)"
-          if [[ -z "$WORKER_BASE_URL" ]]; then
-            echo "Could not detect the workers.dev URL. Check the deployment output and Cloudflare Workers & Pages settings." >&2
-            exit 1
-          fi
           WORKER_ENDPOINT="${WORKER_BASE_URL%/}/ask"
-          printf '// Auto-configured by the VayuGuard AI deployment workflow.\nwindow.VAYUGUARD_AI_ENDPOINT = "%s";\n' "$WORKER_ENDPOINT" > ai-config.js
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add ai-config.js
-          if git diff --cached --quiet; then
-            echo "The frontend already points to this Worker endpoint."
-          else
-            git commit -m "Configure deployed VayuGuard Gemini endpoint"
-            git push
+          printf '// Auto-configured by the VayuGuard AI deployment workflow.\nwindow.VAYUGUARD_AI_ENDPOINT = "%s";\n' "$WORKER_ENDPOINT" > "$RUNNER_TEMP/ai-config.js"
+          API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/ai-config.js"
+          FILE_INFO="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API_URL?ref=main")"
+          FILE_SHA="$(printf '%s' "$FILE_INFO" | jq -r '.sha')"
+          CURRENT_B64="$(printf '%s' "$FILE_INFO" | jq -r '.content' | tr -d '\n')"
+          CURRENT_CONTENT="$(printf '%s' "$CURRENT_B64" | base64 --decode 2>/dev/null || true)"
+          TARGET_CONTENT="$(cat "$RUNNER_TEMP/ai-config.js")"
+          if [[ "$CURRENT_CONTENT" != "$TARGET_CONTENT" ]]; then
+            CONTENT_B64="$(base64 -w 0 "$RUNNER_TEMP/ai-config.js")"
+            PAYLOAD="$(jq -n --arg message "Configure deployed VayuGuard Gemini endpoint" --arg content "$CONTENT_B64" --arg sha "$FILE_SHA" --arg branch "main" '{message:$message,content:$content,sha:$sha,branch:$branch}')"
+            curl --fail --silent --show-error -X PUT "$API_URL" \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              -d "$PAYLOAD" >/dev/null
           fi
-          echo "## VayuGuard Gemini API" >> "$GITHUB_STEP_SUMMARY"
-          echo "Worker endpoint: $WORKER_ENDPOINT" >> "$GITHUB_STEP_SUMMARY"
-          echo "Triggering GitHub Pages deployment with the configured endpoint." >> "$GITHUB_STEP_SUMMARY"
+          echo "VayuGuard frontend endpoint configured: $WORKER_ENDPOINT" >> "$GITHUB_STEP_SUMMARY"
           curl --fail --silent --show-error -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/Ambkeshwargupta/SwachhVayu-AI/actions/workflows/pages.yml/dispatches \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/pages.yml/dispatches" \
             -d '{"ref":"main"}'
+          echo "GitHub Pages deployment dispatched with the live Gemini endpoint." >> "$GITHUB_STEP_SUMMARY"
