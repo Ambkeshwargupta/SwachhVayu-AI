@@ -123,6 +123,13 @@ function providerError(status, data) {
   return "The Gemini service could not complete this request (HTTP " + status + ").";
 }
 
+function interactionFailureReason(data) {
+  const issue = data && (data.error || (Array.isArray(data.errors) ? data.errors[0] : null));
+  const message = issue && (issue.message || issue.status || issue.code);
+  if (typeof message === "string" && message.trim()) return cleanString(message, 280);
+  return "The provider marked this interaction as failed without a detailed message.";
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin") || "";
@@ -172,7 +179,7 @@ export default {
           15000
         );
         if (!response.ok) return json({ error: providerError(response.status, data) }, 502, origin);
-        if (data.status === "failed") return json({ error: "Gemini could not complete this answer. Please try a new question." }, 502, origin);
+        if (data.status === "failed") return json({ error: "Gemini interaction failed: " + interactionFailureReason(data) }, 502, origin);
         if (data.status === "completed") {
           const answer = responseText(data);
           if (!answer) return json({ error: "Gemini completed the interaction without a text answer. Please try again." }, 502, origin);
