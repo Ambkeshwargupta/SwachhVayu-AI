@@ -195,7 +195,7 @@ export default {
       const data = await upstream.json();
       const parts = data && data.candidates && data.candidates[0] &&
         data.candidates[0].content && data.candidates[0].content.parts || [];
-      const answer = parts.map((part) => typeof part.text === "string" ? part.text : "").join("\n").trim();
+      const answer = parts.filter((part) => part && part.thought !== true).map((part) => typeof part.text === "string" ? part.text : "").join("\n").trim();
 
       if (!answer) {
         return json({ error: "Gemini returned no text for this question. Try rephrasing it." }, 502, origin);
