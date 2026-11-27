@@ -6,7 +6,8 @@ This is the server-side proxy for the VayuGuard Air Guide. It keeps the Gemini A
 
 - Cloudflare Workers
 - Google Gemini API: `gemini-3.8-flash`
-- Endpoint: `POST /ask`
+- Endpoint: `POST /ask` (creates a background Gemini interaction)
+- Poll endpoint: `GET /status/{taskId}`
 - Health check: `GET /health`
 - CORS allow-list: `https://ambkeshwargupta.github.io` plus localhost development origins
 - Rate limiter: 8 requests per 60 seconds per client IP in each Cloudflare location (approximate)
@@ -19,7 +20,7 @@ The workflow at `.github/workflows/deploy-ai-worker.yml` expects these repositor
 - `CLOUDFLARE_API_TOKEN` — Cloudflare API token with Edit Cloudflare Workers permission, scoped to the target account.
 - `CLOUDFLARE_ACCOUNT_ID` — target Cloudflare account ID.
 
-Run **Actions → Deploy VayuGuard Gemini API → Run workflow** after adding the two Cloudflare secrets. The workflow deploys this Worker, uploads `GEMINI_API_KEY` as an encrypted Worker secret, reads the `workers.dev` URL from Wrangler's deploy output, writes the public `/ask` endpoint to the root `ai-config.js`, and pushes that config update to trigger GitHub Pages deployment.
+Run **Actions → Deploy VayuGuard Gemini API → Run workflow** after adding the two Cloudflare secrets. The workflow deploys this Worker, uploads `GEMINI_API_KEY` as an encrypted Worker secret, runs a live Gemini background-interaction smoke test, writes the public `/ask` endpoint to the root `ai-config.js` via the GitHub Contents API, and dispatches a GitHub Pages deployment.
 
 ## Local development
 
@@ -45,7 +46,7 @@ Health:
 curl http://127.0.0.1:8787/health
 ```
 
-Ask:
+Ask (returns an interaction task ID, normally with HTTP 202):
 
 ```bash
 curl -X POST http://127.0.0.1:8787/ask \
@@ -66,7 +67,7 @@ curl -X POST http://127.0.0.1:8787/ask \
   }'
 ```
 
-The sample uses illustrative values for local smoke testing, not observed VayuGuard data.
+The sample uses illustrative values for local smoke testing, not observed VayuGuard data. When `/ask` returns a `taskId`, poll `GET /status/{taskId}` until the JSON status is `completed`; the completed response contains `answer`, `provider` and `model`.
 
 ## Safety and privacy
 
