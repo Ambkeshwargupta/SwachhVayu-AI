@@ -1,3 +1,2 @@
-// Public configuration only. Never put the Gemini API key in this file.
-// After the Cloudflare Worker is deployed, set this to its /ask URL.
-window.VAYUGUARD_AI_ENDPOINT = "";
+// Public endpoint configuration. The Gemini API key is never stored in this file.
+window.VAYUGUARD_AI_ENDPOINT = "https://vayuguard-ai.official-ambkeshwargupta.workers.dev/ask";
