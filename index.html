@@ -902,12 +902,17 @@ function drawChart(){
   ctx.fillStyle=j===0?"#fff7d7":"#d2f17d";ctx.fill();
   ctx.lineWidth=2;ctx.strokeStyle="#1a573b";ctx.stroke();
  });
- // The displayed hours use the model's own local timestamps.
- let ticks=[0,6,12,18,23].filter(function(v){return v<values.length});
- ctx.font='10px "DM Sans",sans-serif';ctx.fillStyle="#c5d9ca";ctx.textAlign="center";
+ // Keep only a few well-spaced, readable time labels.
+ let ticks=(w<420?[0,12,23]:w<680?[0,8,16,23]:[0,6,12,18,23]).filter(function(v){return v<values.length});
+ ctx.font=w<420?'9px "DM Sans",sans-serif':'11px "DM Sans",sans-serif';
+ ctx.fillStyle="#c5d9ca";ctx.textAlign="center";ctx.textBaseline="middle";
  ticks.forEach(function(j){
   let p=points[j];if(!p)return;
-  ctx.fillText(dateTime(series.time[from+j]),p.x,baseY+22);
+  let raw=String(series.time[from+j]),match=raw.match(/T(\d{2}):(\d{2})/);
+  let label=(w<680&&match)
+   ?new Date("2000-01-01T"+match[1]+":"+match[2]).toLocaleTimeString(LANG==="hi"?"hi-IN":"en-IN",{hour:"numeric"})
+   :dateTime(raw);
+  ctx.fillText(label,p.x,baseY+22);
  });
  // Current-value label above the first point.
  let current=points[0];
@@ -932,11 +937,9 @@ bindSearch("topSearch","suggestions");bindSearch("placeSearch","placeSuggestions
 function updateAreaLabels(){
  const name=S.name||t("myLocationName");
  const source=S.locationKind==="device"?(S.locationResolving?t("resolvingArea"):S.locationNameResolved?t("gpsSource"):t("areaNameUnavailable")):t("searchedSource");
- const main=$("currentAreaName"),dash=$("dashboardAreaName"),src=$("areaSource"),dashSrc=$("dashboardAreaSource"),indicator=$("areaIndicator");
+ const main=$("currentAreaName"),src=$("areaSource"),indicator=$("areaIndicator");
  if(main){main.textContent=name;main.title=name}
- if(dash){dash.textContent=name;dash.title=name}
  if(src)src.textContent=source;
- if(dashSrc)dashSrc.textContent=source;
  if(indicator){indicator.title=t("locationProviderNote");indicator.setAttribute("aria-label",t("currentAreaLabel")+": "+name+" · "+source)}
  const chart=$("chartLocation");if(chart)chart.textContent=name;
 }
