@@ -135,6 +135,8 @@ function interactionFailureCode(data) {
   return cleanString(issue && (issue.code || issue.status), 60).toUpperCase();
 }
 
+// Some Gemini background jobs can fail during generation with a generic INVALID_ARGUMENT
+// message even when the same request shape is valid; expose this narrow case for one client retry.
 function isRetryableInteractionFailure(data) {
   const code = interactionFailureCode(data);
   const message = interactionFailureReason(data).toLowerCase();
