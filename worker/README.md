@@ -5,7 +5,7 @@ This is the server-side proxy for the VayuGuard Air Guide. It keeps the Gemini A
 ## Runtime
 
 - Cloudflare Workers
-- Google Gemini API: `gemini-3.8-flash`
+- Google Gemini API: `gemini-3.6-flash`
 - Endpoint: `POST /ask` (creates a background Gemini interaction)
 - Poll endpoint: `GET /status/{taskId}`
 - Health check: `GET /health`
@@ -20,7 +20,7 @@ The workflow at `.github/workflows/deploy-ai-worker.yml` expects these repositor
 - `CLOUDFLARE_API_TOKEN` — Cloudflare API token with Edit Cloudflare Workers permission, scoped to the target account.
 - `CLOUDFLARE_ACCOUNT_ID` — target Cloudflare account ID.
 
-Run **Actions → Deploy VayuGuard Gemini API → Run workflow** after adding the two Cloudflare secrets. The workflow deploys this Worker, uploads `GEMINI_API_KEY` as an encrypted Worker secret, runs a live Gemini background-interaction smoke test, writes the public `/ask` endpoint to the root `ai-config.js` via the GitHub Contents API, and dispatches a GitHub Pages deployment.
+Run **Actions → Deploy VayuGuard Gemini API → Run workflow** after adding the two Cloudflare secrets. The workflow deploys this Worker, uploads `GEMINI_API_KEY` as an encrypted Worker secret, verifies the Worker's health and key configuration without making a billable Gemini generation call, writes the public `/ask` endpoint to the root `ai-config.js` via the GitHub Contents API, and dispatches a GitHub Pages deployment. Live Gemini inference must be tested manually when the Google project has available quota.
 
 ## Local development
 
@@ -71,6 +71,6 @@ The sample uses illustrative values for local smoke testing, not observed VayuGu
 
 ## Safety and privacy
 
-The Worker normalises context to a fixed allow-list. It does not accept arbitrary system instructions from the browser. Precise coordinates are not included. It does not log prompts or responses. Its system instruction requires model/CPCB distinctions, prohibits fabricated measurements, and prevents medical diagnosis or safety guarantees.
+The Worker normalises context to a fixed allow-list. It does not accept arbitrary system instructions from the browser. Precise coordinates are not included. It does not log prompts or responses. Its system instruction requires model/CPCB distinctions, prohibits fabricated measurements, and prevents medical diagnosis or safety guarantees. The background Gemini Interactions are stored by Google by default (Free tier: 1 day; Paid tier: 55 days unless a shorter paid-tier retention window is configured).
 
 The public Worker URL is not a secret. The Gemini API key must remain only in GitHub Actions secrets and Cloudflare Worker secrets.
