@@ -113,7 +113,7 @@ GitHub Pages is configured to deploy through `.github/workflows/pages.yml`.
 
 ### Secure Gemini assistant backend
 
-The Gemini key must never be placed in `index.html`, `ai-config.js`, or any public repository file. The application calls a Cloudflare Worker, which reads the encrypted `GEMINI_API_KEY` secret and calls Google's Gemini Interactions API server-to-server. The Worker creates a background interaction and provides a status endpoint for polling until the response is ready.
+The Gemini key must never be placed in `index.html`, `ai-config.js`, or any public repository file. The application calls a Cloudflare Worker, which reads the encrypted `GEMINI_API_KEY` secret and calls Google's Gemini GenerateContent API server-to-server. The Worker returns the generated text directly to the browser; no background interaction or polling endpoint is used.
 
 The repository already includes `worker/src/index.js`, `worker/wrangler.toml` and `.github/workflows/deploy-ai-worker.yml`. The deployment workflow also writes the resulting `workers.dev` URL into `ai-config.js` and triggers a GitHub Pages redeployment.
 
