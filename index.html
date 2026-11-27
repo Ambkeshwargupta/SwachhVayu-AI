@@ -296,10 +296,6 @@ body{overflow-x:clip}
 .area-copy strong{font:800 10px "Manrope",sans-serif;letter-spacing:-.1px;color:#183d2a;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .area-source{display:inline-flex;align-items:center;gap:5px;margin-left:3px;padding:5px 7px;border-radius:20px;background:#e7f1e7;color:#386b49;font:800 7px "Space Mono",monospace;letter-spacing:.4px;white-space:nowrap}
 .area-source:before{content:"";width:5px;height:5px;border-radius:50%;background:#62a56d;display:inline-block}
-.current-area-note{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:0 0 9px;color:#758a7c;font:800 8px "Space Mono",monospace;letter-spacing:.75px}
-.current-area-note-dot{width:7px;height:7px;border-radius:50%;background:#6aaf75;box-shadow:0 0 0 3px #6aaf751e}
-.current-area-note b{font:800 10px "Manrope",sans-serif;letter-spacing:0;color:#1d5035;padding:4px 8px;border:1px solid #d6e6d6;background:#f8fcf7;border-radius:6px;max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.current-area-note-source{font:800 7px "Space Mono",monospace;letter-spacing:.55px;color:#829286}
 @media(max-width:1250px){
  .topbar-left{gap:10px}
  .area-indicator{padding:6px 8px;gap:6px}
@@ -315,7 +311,6 @@ body{overflow-x:clip}
  .area-indicator{max-width:100%;margin-left:0}
  .area-copy strong{max-width:155px}
  .area-source{display:none}
- .current-area-note b{max-width:220px}
 }
 </style>
 </head>
@@ -346,7 +341,7 @@ body{overflow-x:clip}
  </div></header>
 
  <section class="page active" id="page-dashboard">
-  <div class="title-row"><div><div class="current-area-note"><span class="current-area-note-dot"></span><span data-i18n="youAreViewing">YOU ARE VIEWING</span><b id="dashboardAreaName" aria-live="polite" aria-atomic="true">New Delhi, India</b><span class="current-area-note-source" id="dashboardAreaSource">SELECTED PLACE</span></div><div class="eyebrow" data-i18n="overviewEyebrow">YOUR AREA · ENVIRONMENTAL BRIEFING</div><h1 data-i18n="overviewTitle">The air outside. A clearer next step.</h1><p class="sub" data-i18n="overviewSub">A practical read of the forecast, what may be driving it, and what you can do next.</p></div><div class="action-row"><button class="btn light" id="printBrief" data-i18n="print">Print briefing</button><button class="btn light" id="saveCurrent" data-i18n="savePlace">Save place +</button></div></div>
+  <div class="title-row"><div><div class="eyebrow" data-i18n="overviewEyebrow">YOUR AREA · ENVIRONMENTAL BRIEFING</div><h1 data-i18n="overviewTitle">The air outside. A clearer next step.</h1><p class="sub" data-i18n="overviewSub">A practical read of the forecast, what may be driving it, and what you can do next.</p></div><div class="action-row"><button class="btn light" id="printBrief" data-i18n="print">Print briefing</button><button class="btn light" id="saveCurrent" data-i18n="savePlace">Save place +</button></div></div>
   <div class="grid hero-grid">
    <div class="card air-card"><div class="air-top"><span data-i18n="currentOutlook">CURRENT MODEL OUTLOOK</span><span class="badge dark" data-i18n="modelled">MODELLED ESTIMATE</span></div><div class="reading"><div class="big" id="aqi">—</div><div class="reading-label"><strong id="aqiLabel" data-i18n="loading">Loading forecast</strong><small id="aqiScale">Modelled U.S. AQI · not CPCB AQI</small></div></div><div class="scale"><span class="pin" id="pin"></span></div><div class="scale-labels"><span data-i18n="scaleGood">Good</span><span data-i18n="scaleModerate">Moderate</span><span data-i18n="scaleSensitive">Sensitive groups</span><span data-i18n="scaleUnhealthy">Unhealthy</span><span data-i18n="scaleVery">Very unhealthy</span><span data-i18n="scaleHazard">Hazardous</span></div><div class="card-foot" id="updated">Preparing local forecast…</div></div>
    <div class="card advice-card"><div><div class="eyebrow" data-i18n="plainLanguage">IN PLAIN LANGUAGE</div><h2 id="adviceTitle">A moment of clarity.</h2><p id="adviceText">The page is fetching the latest model outlook for this location.</p></div><div class="advice-bottom"><span class="dot"></span><span class="small-muted" id="driver">Reading pollutant signals…</span></div></div>
