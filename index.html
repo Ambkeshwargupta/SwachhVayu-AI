@@ -621,6 +621,135 @@ h1{
  .day{padding:14px}
  .day .daynum{font-size:27px}
 }
+
+/* ── Indoor air: human field-journal layout ───────────────────── */
+#page-indoor{width:100%;max-width:100%;min-width:0;overflow-x:clip}
+#page-indoor .title-row{margin-bottom:23px}
+#page-indoor .title-row h1{max-width:980px;font-size:clamp(34px,3vw,46px);letter-spacing:-1.7px}
+#page-indoor .title-row .sub{font-size:14px;max-width:880px;line-height:1.75}
+.indoor-headline-meta{display:flex;align-items:center;gap:8px;margin-top:13px;color:#647b69;font:800 9px "Space Mono",monospace;letter-spacing:.8px}
+.indoor-meta-dot{width:7px;height:7px;border-radius:50%;background:#78a86a;box-shadow:0 0 0 4px rgba(120,168,106,.14)}
+#page-indoor>.indoor-primary-grid,
+#page-indoor>.indoor-equipment-grid,
+#page-indoor>.indoor-respirator-grid{
+ width:100%;max-width:100%;min-width:0;box-sizing:border-box;
+ grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);
+ align-items:stretch;gap:18px;
+}
+#page-indoor .indoor-primary-grid>.card,
+#page-indoor .indoor-equipment-grid>.card,
+#page-indoor .indoor-respirator-grid>.card{width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow:hidden}
+.room-guide-card{
+ background:linear-gradient(145deg,#fbf7e9 0%,#f4f1e2 65%,#e8efe0 100%);
+ border-color:#d8dfcc;padding:25px 26px 21px;
+}
+.indoor-panel-head,.source-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.indoor-panel-kicker{display:block;margin-bottom:8px;color:#719078;font:800 9px "Space Mono",monospace;letter-spacing:1.35px}
+.indoor-panel-stamp{padding:7px 9px;border:1px solid #d7dfcb;border-radius:8px;color:#718573;background:#f7f5e9;font:800 9px "Space Mono",monospace;white-space:nowrap}
+.room-guide-card h2,.source-panel h2,.cadr-card h2,.equipment-guide-card h2,.respirator-card h2,.source-first-card h2{font:800 21px "Manrope",sans-serif;letter-spacing:-.7px;line-height:1.2}
+.room-list{display:grid;gap:0;margin-top:17px}
+.room-item{display:flex;align-items:flex-start;gap:14px;padding:16px 0;border-bottom:1px solid rgba(126,151,119,.22)}
+.room-item:last-child{border-bottom:0}
+.room-item .rowico{width:43px;height:43px;flex:0 0 43px;border-radius:13px;background:linear-gradient(145deg,#e1eddd,#f0f1df);border:1px solid #d8e4d4;color:#2b7048;box-shadow:0 5px 15px rgba(42,86,51,.06)}
+.room-item .rowico svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
+.room-content{flex:1;min-width:0}
+.room-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.room-top b{font:800 14px "Manrope",sans-serif;color:#20442f}
+.room-index{flex:0 0 auto;color:#8b9b88;font:700 9px "Space Mono",monospace}
+.room-item p{font-size:13px;line-height:1.72;color:#5e7161;margin:5px 0 0;overflow-wrap:anywhere}
+.room-guide-foot{display:flex;align-items:center;gap:10px;margin-top:17px;padding:12px 14px;background:rgba(225,235,215,.7);border:1px solid #dce5d4;border-radius:11px;color:#52694f;font-size:11px;line-height:1.6}
+.room-foot-icon{color:#4d8051;font-size:17px}
+.source-panel{
+ background:
+  radial-gradient(circle at 100% 0%,rgba(201,239,121,.14),transparent 36%),
+  linear-gradient(145deg,#0b3023 0%,#12452f 58%,#0e3829 100%);
+ border:1px solid #2b6042;border-radius:20px;padding:25px 25px 22px;color:#eff7eb;
+ box-shadow:0 18px 38px rgba(11,48,31,.13);
+}
+.source-panel h2{color:#f8f9ed;margin:0}
+.source-panel .indoor-panel-kicker{color:#b6d39b}
+.source-panel-sub{font-size:12px;line-height:1.65;color:#c1d7c5;margin:8px 0 0;max-width:460px}
+.source-count{flex:0 0 auto;padding:8px 10px;border-radius:9px;background:#d6ed9a;color:#20452b;font:800 9px "Space Mono",monospace;letter-spacing:.35px;white-space:nowrap}
+.source-progress{height:5px;background:rgba(238,247,229,.13);border-radius:6px;overflow:hidden;margin:17px 0 13px}
+.source-progress span{display:block;width:0;height:100%;border-radius:6px;background:linear-gradient(90deg,#8dc97a,#d6ef88);transition:width .2s ease}
+.source-list{display:grid;gap:8px}
+.source-choice{position:relative;display:flex;align-items:center;gap:12px;min-height:54px;margin:0;padding:10px 13px;border:1px solid rgba(226,243,223,.15);border-radius:12px;background:rgba(248,250,237,.055);color:#eaf3e8;cursor:pointer;transition:background .16s,border-color .16s,transform .16s;user-select:none}
+.source-choice:hover{background:rgba(248,250,237,.105);border-color:rgba(209,239,153,.42);transform:translateY(-1px)}
+.source-choice.selected{background:rgba(208,237,137,.13);border-color:rgba(211,241,137,.7);box-shadow:inset 3px 0 #c9ed79}
+.source-number{flex:0 0 25px;color:#a8c6ae;font:800 9px "Space Mono",monospace}
+.source-choice.selected .source-number{color:#d9f29a}
+.source-name{flex:1;min-width:0;font-size:13px;font-weight:650;line-height:1.45;overflow-wrap:anywhere}
+.source-choice input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.source-checkmark{display:grid;place-items:center;width:22px;height:22px;flex:0 0 22px;border-radius:7px;border:1px solid rgba(225,242,220,.34);color:transparent;background:rgba(255,255,255,.05);font-size:13px;font-weight:900;transition:all .16s}
+.source-choice.selected .source-checkmark{color:#173c29;background:#d7f08f;border-color:#d7f08f}
+.source-choice:focus-within{outline:3px solid #d7ef8e;outline-offset:3px}
+.source-result{margin-top:15px;padding:14px 15px;background:rgba(246,245,220,.09);border:1px solid rgba(228,239,198,.16);border-left:3px solid #d0ec7d;border-radius:10px;color:#e7efdc}
+.source-empty{display:flex;align-items:flex-start;gap:10px}
+.source-empty-mark{display:grid;place-items:center;width:25px;height:25px;flex:0 0 25px;border-radius:8px;background:#d8ed9a;color:#173c29;font-size:14px}
+.source-empty b{display:block;color:#f0f5e7;font-size:12px;line-height:1.55;font-weight:650}
+.source-empty small{display:block;margin-top:5px;color:#c0d3c0;font-size:10px;line-height:1.6}
+.source-result-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px;color:#f6f8e8;font-size:12px;font-weight:800}
+.source-result-title b{color:#d9f18e;font:800 10px "Space Mono",monospace}
+.source-action-list{display:grid;gap:7px}
+.source-action-item{display:grid;grid-template-columns:23px minmax(0,1fr);gap:9px;align-items:start;padding:8px 0;border-top:1px solid rgba(238,246,224,.13)}
+.source-action-item>span{display:grid;place-items:center;width:22px;height:22px;border-radius:7px;background:rgba(215,240,143,.15);color:#dbf29b;font:800 9px "Space Mono",monospace}
+.source-action-item p{margin:0;color:#e0ebdc;font-size:11px;line-height:1.65;overflow-wrap:anywhere}
+.indoor-section-heading{align-items:flex-end;margin:34px 0 15px}
+.indoor-section-heading>div{display:grid;gap:5px}
+.indoor-section-kicker{color:#7b917d;font:800 9px "Space Mono",monospace;letter-spacing:1.2px}
+.indoor-section-heading h2{font:800 25px "Manrope",sans-serif;letter-spacing:-.8px;margin:0;color:#153a29}
+.indoor-section-heading>span{display:inline-flex;padding:7px 10px;border-radius:8px;background:#e5eadb;color:#657b66;font:800 8px "Space Mono",monospace}
+.cadr-card{background:linear-gradient(145deg,#f9f1de,#f5ead4 70%,#f1e5ce);border-color:#e3d7b9;padding:25px}
+.cadr-card .indoor-panel-kicker{color:#9a8153}
+.cadr-card h2{color:#3d452f;margin-bottom:10px}
+.cadr-card .muted{font-size:13px;line-height:1.75;color:#66705a}
+.cadr-card .field input,.cadr-card .field select{background:#fffdf5;border-color:#ded5c2}
+.cadr-result{background:linear-gradient(110deg,#e1edcf,#eff1d9);border-left-color:#91b968;color:#45613d;padding:15px 17px}
+.cadr-result b{font:800 29px "Manrope";color:#245e39}
+.cadr-card .footnote{font-size:11px;line-height:1.7;color:#6d755f}
+.equipment-guide-card{background:linear-gradient(145deg,#f7f7e9,#eef2df);border-color:#d9e1cb;padding:25px}
+.equipment-guide-card h2{margin-bottom:13px}
+.equipment-list{gap:0;margin-top:5px}
+.equipment-list .rowitem{padding:14px 0;border-bottom:1px solid #dfe6d5}
+.equipment-list .rowitem:last-child{border-bottom:0}
+.equipment-list .rowico{width:34px;height:34px;flex:0 0 34px;border-radius:10px;background:#e1ebd9;border-color:#d6e2d1;color:#3c7248;font:800 10px "Space Mono",monospace}
+.equipment-list .rowitem b{font:800 12px "Manrope";color:#294d32}
+.equipment-list .rowitem p{font-size:11px;line-height:1.7;color:#65715e}
+.indoor-respirator-grid{margin-top:15px}
+.respirator-card{background:linear-gradient(145deg,#e2eee4,#edf1e2);border-color:#d1dfd2;padding:24px}
+.respirator-card .indoor-panel-kicker{color:#598363}
+.respirator-card h2{margin:0 0 12px}
+.respirator-card .muted{font-size:12px;line-height:1.75;color:#526b59}
+.source-first-card{background:linear-gradient(145deg,#f6ead3,#f1e4cf);border-color:#e2d6bd;padding:24px}
+.source-first-card .indoor-panel-kicker{color:#927344}
+.source-first-card h2{margin:0 0 12px;color:#4b432e}
+.source-first-card .muted{font-size:12px;line-height:1.75;color:#6c634d}
+.source-first-card .notice{background:#e9e5ce;border-left-color:#b69a58;color:#60583f}
+@media(max-width:1100px){
+ #page-indoor>.indoor-primary-grid,#page-indoor>.indoor-equipment-grid,#page-indoor>.indoor-respirator-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:780px){
+ #page-indoor .title-row h1{font-size:34px}
+ #page-indoor .title-row .sub{font-size:13px}
+ .room-guide-card,.source-panel,.cadr-card,.equipment-guide-card,.respirator-card,.source-first-card{padding:19px}
+ .room-item{gap:11px;padding:13px 0}
+ .room-item .rowico{width:38px;height:38px;flex-basis:38px}
+ .room-item p{font-size:12px}
+ .source-choice{min-height:51px}
+ .source-name{font-size:12px}
+ .indoor-section-heading{align-items:flex-start;flex-direction:column}
+ .indoor-section-heading h2{font-size:22px}
+}
+@media(max-width:430px){
+ #page-indoor .title-row h1{font-size:30px}
+ .indoor-panel-head,.source-panel-head{gap:8px}
+ .room-guide-card h2,.source-panel h2,.cadr-card h2,.equipment-guide-card h2,.respirator-card h2,.source-first-card h2{font-size:19px}
+ .room-index,.indoor-panel-stamp{font-size:8px}
+ .source-choice{padding:10px 10px;gap:9px}
+ .source-name{font-size:11px}
+ .source-count{font-size:8px;padding:7px}
+ .source-empty b{font-size:11px}
+}
 </style>
 </head>
 <body>
@@ -702,28 +831,30 @@ h1{
  </section>
 
  <section class="page" id="page-indoor">
-  <div class="title-row"><div><div class="eyebrow" data-i18n="indoorEyebrow">THE AIR INSIDE COUNTS TOO</div><h1 data-i18n="indoorTitle">Start with what you can control indoors.</h1><p class="sub" data-i18n="indoorSub">Outdoor forecasts cannot tell you the PM2.5 level inside a room. This is a source-control checklist, not an indoor air monitor.</p></div></div>
-  <div class="grid two"><div class="card"><h2 data-i18n="roomGuide">Room-by-room basics</h2><div class="list">
-   <div class="rowitem"><div class="rowico">⌂</div><div><b data-i18n="kitchen">Kitchen</b><p data-i18n="kitchenTip">Use an externally vented extractor while cooking, where possible. Keep burners maintained and avoid unnecessary indoor combustion.</p></div></div>
-   <div class="rowitem"><div class="rowico">▤</div><div><b data-i18n="bedroom">Bedroom</b><p data-i18n="bedroomTip">Damp-dust surfaces. If you use a particle air cleaner, match its clean-air delivery to the room and maintain the filter.</p></div></div>
-   <div class="rowitem"><div class="rowico">◌</div><div><b data-i18n="living">Living spaces</b><p data-i18n="livingTip">Keep rooms smoke-free. Ventilate when outdoor conditions are comparatively better, while considering heat, humidity and security.</p></div></div>
-   <div class="rowitem"><div class="rowico">♧</div><div><b data-i18n="wholeHome">Whole home</b><p data-i18n="wholeHomeTip">Address dampness at its source, avoid ozone-generating devices and never block required appliance ventilation.</p></div></div>
-  </div></div>
-  <div class="card"><h2 data-i18n="sourceCheck">Find the sources worth tackling first</h2><p class="muted" data-i18n="sourceCheckSub">Select anything that applies. The app will build a practical checklist.</p><div id="sourcesList"></div><div class="notice" id="indoorResult" data-i18n="sourceDefault">Start with the source: prevention is usually more useful than masking pollution after it is created.</div></div></div>
-  <div class="section-head"><h2 data-i18n="cleanAirTools">Choosing cleaner-air equipment</h2><span data-i18n="practicalNotPrescription">PRACTICAL GUIDE · NOT A MEDICAL PRESCRIPTION</span></div>
-  <div class="grid two">
-   <div class="card"><h2 data-i18n="cadrTitle">Room air-cleaner sizing helper</h2><p class="muted" data-i18n="cadrIntro">Estimate the clean-air delivery rate for your chosen room air-change target and compare it with the manufacturer's CADR rating.</p>
+  <div class="title-row indoor-title-row"><div><div class="eyebrow" data-i18n="indoorEyebrow">THE AIR INSIDE COUNTS TOO</div><h1 data-i18n="indoorTitle">Start with what you can control indoors.</h1><p class="sub" data-i18n="indoorSub">Outdoor forecasts cannot tell you the PM2.5 level inside a room. This is a source-control checklist, not an indoor air monitor.</p><div class="indoor-headline-meta"><span class="indoor-meta-dot"></span><span data-i18n="indoorMeta">A PRACTICAL HOME CHECK · NOT A ROOM SENSOR</span></div></div></div>
+  <div class="grid two indoor-primary-grid">
+   <div class="card room-guide-card"><div class="indoor-panel-head"><div><span class="indoor-panel-kicker" data-i18n="roomGuideKicker">THE EVERYDAY SPACES</span><h2 data-i18n="roomGuide">Room-by-room basics</h2></div><span class="indoor-panel-stamp">01 — 04</span></div><div class="list room-list">
+   <div class="rowitem room-item"><div class="rowico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5.5 9v11h13V9M9 20v-6h6v6"/></svg></div><div class="room-content"><div class="room-top"><b data-i18n="kitchen">Kitchen</b><span class="room-index">01</span></div><p data-i18n="kitchenTip">Use an externally vented extractor while cooking, where possible. Keep burners maintained and avoid unnecessary indoor combustion.</p></div></div>
+   <div class="rowitem room-item"><div class="rowico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v11M3 20h18M7 7V4h10v3M7 12h10M7 16h10"/></svg></div><div class="room-content"><div class="room-top"><b data-i18n="bedroom">Bedroom</b><span class="room-index">02</span></div><p data-i18n="bedroomTip">Damp-dust surfaces. If you use a particle air cleaner, match its clean-air delivery to the room and maintain the filter.</p></div></div>
+   <div class="rowitem room-item"><div class="rowico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18M5 20V9l7-5 7 5v11M8 13h8M8 16h8"/></svg></div><div class="room-content"><div class="room-top"><b data-i18n="living">Living spaces</b><span class="room-index">03</span></div><p data-i18n="livingTip">Keep rooms smoke-free. Ventilate when outdoor conditions are comparatively better, while considering heat, humidity and security.</p></div></div>
+   <div class="rowitem room-item"><div class="rowico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5M5.5 10v10h13V10M9 20v-6h6v6M2 21h20"/></svg></div><div class="room-content"><div class="room-top"><b data-i18n="wholeHome">Whole home</b><span class="room-index">04</span></div><p data-i18n="wholeHomeTip">Address dampness at its source, avoid ozone-generating devices and never block required appliance ventilation.</p></div></div>
+  </div><div class="room-guide-foot"><span class="room-foot-icon">✳</span><span data-i18n="roomGuideFoot">Small changes at the source usually matter more than adding another gadget.</span></div></div>
+   <div class="card source-panel"><div class="source-panel-head"><div><span class="indoor-panel-kicker" data-i18n="sourcePanelKicker">A QUICK HOME AUDIT</span><h2 data-i18n="sourceCheck">Find the sources worth tackling first</h2><p class="source-panel-sub" data-i18n="sourceCheckSub">Select anything that applies. The app will build a practical checklist.</p></div><span class="source-count" id="sourceCount">0 / 7</span></div><div class="source-progress"><span id="sourceProgress"></span></div><div id="sourcesList" class="source-list"></div><div class="notice source-result" id="indoorResult" data-i18n="sourceDefault">Start with the source: prevention is usually more useful than masking pollution after it is created.</div></div>
+  </div>
+  <div class="section-head indoor-section-heading"><div><span class="indoor-section-kicker" data-i18n="equipmentKicker">TOOLS & PRACTICAL KNOW-HOW</span><h2 data-i18n="cleanAirTools">Choosing cleaner-air equipment</h2></div><span data-i18n="practicalNotPrescription">PRACTICAL GUIDE · NOT A MEDICAL PRESCRIPTION</span></div>
+  <div class="grid two indoor-equipment-grid">
+   <div class="card cadr-card"><div class="indoor-panel-kicker" data-i18n="sizingKicker">SIZE THE ROOM, NOT THE MARKETING</div><h2 data-i18n="cadrTitle">Room air-cleaner sizing helper</h2><p class="muted" data-i18n="cadrIntro">Estimate the clean-air delivery rate for your chosen room air-change target and compare it with the manufacturer's CADR rating.</p>
     <div class="form">
      <div class="field"><label data-i18n="roomArea">Room floor area (m²)</label><input id="roomArea" type="number" min="1" max="300" value="18"></div>
      <div class="field"><label data-i18n="ceilingHeight">Ceiling height (m)</label><input id="ceilingHeight" type="number" min="1.8" max="6" step=".1" value="2.7"></div>
      <div class="field"><label data-i18n="airChanges">Chosen air changes per hour</label><select id="airChanges"><option value="2">2 ACH</option><option value="3">3 ACH</option><option value="4" selected>4 ACH</option><option value="5">5 ACH</option><option value="6">6 ACH</option></select></div>
     </div>
-    <div class="notice" id="cadrResult"><b>194 m³/h</b><br>Illustrative clean-air delivery for the selected room and target.</div>
+    <div class="notice cadr-result" id="cadrResult"><b>194 m³/h</b><br>Illustrative clean-air delivery for the selected room and target.</div>
     <p class="footnote" data-i18n="cadrMethod">Calculation: room area × ceiling height × selected air changes per hour. The selected ACH is a planning input, not a universal health standard. Check the entire open-plan area, actual CADR at the speed you will use, noise, filter availability and maintenance.</p>
     <div class="action-row"><a class="btn light" href="https://www.epa.gov/indoor-air-quality-iaq/guide-air-cleaners-home" target="_blank" rel="noopener" data-i18n="epaGuide">EPA guide to home air cleaners ↗</a></div>
    </div>
-   <div class="card"><h2 data-i18n="equipmentBasics">What to check before buying or using</h2>
-    <div class="list">
+   <div class="card equipment-guide-card"><div class="indoor-panel-kicker" data-i18n="equipmentKicker">BEYOND THE BOX</div><h2 data-i18n="equipmentBasics">What to check before buying or using</h2>
+    <div class="list equipment-list">
      <div class="rowitem"><div class="rowico">01</div><div><b data-i18n="hepaTitle">Particles: HEPA or an adequate smoke CADR</b><p data-i18n="hepaText">Match the manufacturer's room-size guidance and CADR to the whole space. Higher CADR generally means greater particle-cleaning capacity. Keep airflow unobstructed.</p></div></div>
      <div class="rowitem"><div class="rowico">02</div><div><b data-i18n="carbonTitle">Gases and odours: a suitable sorbent filter</b><p data-i18n="carbonText">Particle filters do not automatically remove gases. Look for an activated-carbon or other gas-specific filter; effectiveness depends on filter amount and replacement.</p></div></div>
      <div class="rowitem"><div class="rowico">03</div><div><b data-i18n="ozoneTitle">Avoid ozone-generating devices</b><p data-i18n="ozoneText">Ozone is a lung irritant. Be cautious with ionizers, plasma and similar technologies; review independent emissions information and product documentation.</p></div></div>
@@ -731,9 +862,9 @@ h1{
     </div>
    </div>
   </div>
-  <div class="grid two" style="margin-top:13px">
-   <div class="card"><h2 data-i18n="respiratorTitle">When a particle respirator is relevant</h2><p class="muted" data-i18n="respiratorText">A properly fitted, certified particulate respirator such as an N95-type filtering facepiece can reduce inhalation of particles when used correctly. Fit and seal matter; follow product instructions and local public-health guidance.</p><p class="muted" data-i18n="respiratorLimit">Important: particle respirators do not protect against gases or vapours. A loose cloth or surgical-style mask is not the same as a tight-fitting particulate respirator. This guide does not determine whether a respirator is suitable for your health or work.</p><a href="https://www.cdc.gov/niosh/ppe/respirators/ffr.html" target="_blank" rel="noopener" data-i18n="cdcRespGuide">CDC / NIOSH respirator guidance ↗</a></div>
-   <div class="card"><h2 data-i18n="sourceBeforeDevice">Fix the source before adding a device</h2><p class="muted" data-i18n="sourceBeforeDeviceText">Filtration is one layer. Keep rooms smoke-free, use externally vented cooking extraction where possible, damp-clean dust, address moisture and follow safe ventilation practices. A purifier does not make indoor combustion harmless.</p><div class="notice" data-i18n="equipmentDisclaimer">This helper is arithmetic, not a product recommendation or certification. It does not measure room air, guarantee an air-change rate or replace building/occupational advice.</div></div>
+  <div class="grid two indoor-respirator-grid">
+   <div class="card respirator-card"><div class="indoor-panel-kicker" data-i18n="whenOutdoorsKicker">WHEN YOU NEED TO BE OUTSIDE</div><h2 data-i18n="respiratorTitle">When a particle respirator is relevant</h2><p class="muted" data-i18n="respiratorText">A properly fitted, certified particulate respirator such as an N95-type filtering facepiece can reduce inhalation of particles when used correctly. Fit and seal matter; follow product instructions and local public-health guidance.</p><p class="muted" data-i18n="respiratorLimit">Important: particle respirators do not protect against gases or vapours. A loose cloth or surgical-style mask is not the same as a tight-fitting particulate respirator. This guide does not determine whether a respirator is suitable for your health or work.</p><a href="https://www.cdc.gov/niosh/ppe/respirators/ffr.html" target="_blank" rel="noopener" data-i18n="cdcRespGuide">CDC / NIOSH respirator guidance ↗</a></div>
+   <div class="card source-first-card"><div class="indoor-panel-kicker" data-i18n="sourceFirstKicker">THE FIRST PRINCIPLE</div><h2 data-i18n="sourceBeforeDevice">Fix the source before adding a device</h2><p class="muted" data-i18n="sourceBeforeDeviceText">Filtration is one layer. Keep rooms smoke-free, use externally vented cooking extraction where possible, damp-clean dust, address moisture and follow safe ventilation practices. A purifier does not make indoor combustion harmless.</p><div class="notice" data-i18n="equipmentDisclaimer">This helper is arithmetic, not a product recommendation or certification. It does not measure room air, guarantee an air-change rate or replace building/occupational advice.</div></div>
   </div>
  </section>
 
@@ -794,6 +925,38 @@ Object.assign(dict.hi,{
  cleanAirTools:"साफ़ हवा के उपकरण चुनना",practicalNotPrescription:"व्यावहारिक मार्गदर्शिका · चिकित्सा सलाह नहीं",cadrTitle:"कमरे के एयर क्लीनर का आकार समझें",cadrIntro:"कमरे के लिए आपके चुने गए एयर-चेंज लक्ष्य के अनुसार आवश्यक साफ़ हवा की आपूर्ति का अनुमान लगाएं। इसकी तुलना उपकरण के निर्माता द्वारा दिए गए CADR से करें।",roomArea:"कमरे का फर्श क्षेत्र (m²)",ceilingHeight:"छत की ऊंचाई (m)",airChanges:"प्रति घंटे चुने गए एयर चेंज",cadrMethod:"गणना: कमरे का क्षेत्र × छत की ऊंचाई × चुने गए प्रति घंटे एयर चेंज। ACH आपकी योजना का इनपुट है, सार्वभौमिक स्वास्थ्य मानक नहीं। पूरे खुले क्षेत्र, उपयोग की जाने वाली गति पर CADR, शोर, फिल्टर की उपलब्धता और रखरखाव देखें।",epaGuide:"घर के एयर क्लीनर पर EPA गाइड ↗",equipmentBasics:"खरीदने या उपयोग करने से पहले जांचें",hepaTitle:"कण: HEPA या पर्याप्त स्मोक CADR",hepaText:"निर्माता के कमरे के आकार के निर्देश और CADR को पूरे क्षेत्र से मिलाएं। अधिक CADR आम तौर पर अधिक कण साफ़ करने की क्षमता दर्शाता है। हवा का रास्ता खुला रखें।",carbonTitle:"गैस और गंध: उपयुक्त सोर्बेंट फिल्टर",carbonText:"कणों के फिल्टर अपने आप गैसें नहीं हटाते। प्रदूषक के अनुरूप एक्टिवेटेड कार्बन या अन्य गैस-विशेष फिल्टर देखें; असर फिल्टर की मात्रा और बदलने पर निर्भर है।",ozoneTitle:"ओज़ोन बनाने वाले उपकरणों से बचें",ozoneText:"ओज़ोन फेफड़ों में जलन पैदा कर सकता है। आयोनाइज़र, प्लाज़्मा और समान तकनीकों के बारे में सावधान रहें; उत्सर्जन जानकारी और निर्माता के दस्तावेज़ देखें।",maintenanceTitle:"रखरखाव भी प्रदर्शन का हिस्सा है",maintenanceText:"फिल्टर बदलने और सफाई के निर्देश मानें। बहुत शोर करने वाला या जिसके फिल्टर उपलब्ध न हों, ऐसा उपकरण दिनचर्या के लिए उपयुक्त नहीं हो सकता।",respiratorTitle:"पार्टिकल रेस्पिरेटर कब उपयोगी है?",respiratorText:"सही तरह फिट किया गया, प्रमाणित पार्टिकल रेस्पिरेटर जैसे N95-प्रकार का फिल्टर फेसपीस सही उपयोग पर कणों के सांस द्वारा अंदर जाने को कम कर सकता है। फिट और सील मायने रखते हैं; उत्पाद के निर्देश और स्थानीय स्वास्थ्य सलाह मानें।",respiratorLimit:"महत्वपूर्ण: पार्टिकल रेस्पिरेटर गैस या वाष्प से सुरक्षा नहीं देते। ढीला कपड़े या सर्जिकल-शैली का मास्क टाइट-फिटिंग पार्टिकल रेस्पिरेटर जैसा नहीं है। यह गाइड आपकी सेहत या काम के लिए उपयुक्तता तय नहीं करती।",cdcRespGuide:"CDC / NIOSH रेस्पिरेटर गाइड ↗",sourceBeforeDevice:"उपकरण जोड़ने से पहले प्रदूषण का स्रोत रोकें",sourceBeforeDeviceText:"फिल्टर एक उपाय है। घर को धुएं से मुक्त रखें, संभव हो तो हवा बाहर निकालने वाला एग्जॉस्ट चलाएं, धूल गीले कपड़े से साफ करें, सीलन का कारण दूर करें और सुरक्षित वेंटिलेशन रखें। एयर प्यूरीफायर घर के अंदर दहन को सुरक्षित नहीं बनाता।",equipmentDisclaimer:"यह कैलकुलेटर केवल गणितीय अनुमान है, उत्पाद की सिफारिश या प्रमाणन नहीं। यह कमरे की हवा नहीं मापता, किसी ACH की गारंटी नहीं देता और भवन या व्यावसायिक सलाह का स्थान नहीं है।",myLocation:"मेरी लोकेशन इस्तेमाल करें",myLocationName:"मेरी लोकेशन",locating:"आपकी लोकेशन प्राप्त की जा रही है…",locationSuccess:"स्थान चुना गया। नीचे दिखाई गई वायु गुणवत्ता की जानकारी इस क्षेत्र के लिए है:",locationUnsupported:"यह ब्राउज़र लोकेशन की सुविधा उपलब्ध नहीं कराता।",locationInsecure:"लोकेशन के लिए सुरक्षित HTTPS पेज आवश्यक है।",locationDenied:"लोकेशन की अनुमति नहीं मिली। ब्राउज़र की साइट सेटिंग में लोकेशन अनुमति दें और फिर कोशिश करें।",locationUnavailable:"आपकी लोकेशन प्राप्त नहीं हो सकी। डिवाइस की लोकेशन सेवा जांचें और फिर कोशिश करें।",locationTimeout:"लोकेशन अनुरोध का समय समाप्त हो गया। फिर कोशिश करें।",locationError:"आपकी लोकेशन प्राप्त नहीं हो सकी। कृपया फिर कोशिश करें।",currentAreaLabel:"वर्तमान क्षेत्र",youAreViewing:"आप देख रहे हैं",gpsSource:"डिवाइस लोकेशन",searchedSource:"चुना गया स्थान",resolvingArea:"आपका क्षेत्र खोज रहे हैं…",areaNameUnavailable:"क्षेत्र का नाम उपलब्ध नहीं",locationAreaFallback:"आपकी लोकेशन चुन ली गई है, लेकिन क्षेत्र का नाम नहीं मिला। इसलिए निर्देशांक दिखाए जा रहे हैं।",locationProviderNote:"क्षेत्र का नाम दिखाने के लिए आपकी अनुमति से मिली वर्तमान लोकेशन BigDataCloud की ब्राउज़र रिवर्स-जियोकोडिंग सेवा को भेजी जाती है। एयर पूर्वानुमान अलग से Open-Meteo से लिया जाता है।"
 });
 
+
+Object.assign(dict.en,{
+ indoorMeta:"A PRACTICAL HOME CHECK · NOT A ROOM SENSOR",
+ roomGuideKicker:"THE EVERYDAY SPACES",
+ roomGuideFoot:"Small changes at the source usually matter more than adding another gadget.",
+ sourcePanelKicker:"A QUICK HOME AUDIT",
+ sourceCountZero:"0 OF 7 SELECTED",
+ sourceCountOne:"1 OF 7 SELECTED",
+ sourceCountMany:"SOURCES SELECTED",
+ sourceResultTitle:"Your next practical steps",
+ sourceResultEmpty:"No sources selected yet. Choose anything that applies to your home and your action list will appear here.",
+ equipmentKicker:"TOOLS & PRACTICAL KNOW-HOW",
+ sizingKicker:"SIZE THE ROOM, NOT THE MARKETING",
+ whenOutdoorsKicker:"WHEN YOU NEED TO BE OUTSIDE",
+ sourceFirstKicker:"THE FIRST PRINCIPLE"
+});
+Object.assign(dict.hi,{
+ indoorMeta:"घर के लिए उपयोगी जांच · कमरे का सेंसर नहीं",
+ roomGuideKicker:"रोज़मर्रा के कमरे",
+ roomGuideFoot:"स्रोत पर छोटे बदलाव अक्सर एक और उपकरण जोड़ने से अधिक उपयोगी होते हैं।",
+ sourcePanelKicker:"घर के प्रदूषण स्रोतों की जांच",
+ sourceCountZero:"0 / 7 चुने गए",
+ sourceCountOne:"1 / 7 चुना गया",
+ sourceCountMany:"स्रोत चुने गए",
+ sourceResultTitle:"आपके अगले व्यावहारिक कदम",
+ sourceResultEmpty:"अभी कोई स्रोत नहीं चुना गया। अपने घर पर लागू विकल्प चुनें, आपकी कार्य सूची यहां दिखाई देगी।",
+ equipmentKicker:"उपकरण और उपयोगी जानकारी",
+ sizingKicker:"विज्ञापन नहीं, कमरे का आकार देखें",
+ whenOutdoorsKicker:"जब बाहर जाना ज़रूरी हो",
+ sourceFirstKicker:"सबसे ज़रूरी सिद्धांत"
+});
+
 let LANG=localStorage.getItem("vg_lang")==="hi"?"hi":"en";
 const t=function(k){return (dict[LANG]&&dict[LANG][k])||dict.en[k]||k};
 
@@ -832,7 +995,7 @@ function translateOptions(){
 }
 
 function translate(){document.documentElement.lang=LANG;if($("myLocation")){$("myLocation").title=t("myLocation");$("myLocation").setAttribute("aria-label",t("myLocation"))}if(S.locationKind==="device"&&!S.locationNameResolved)S.name=S.locationResolving?t("resolvingArea"):t("myLocationName")+" ("+S.lat.toFixed(3)+", "+S.lon.toFixed(3)+")";document.querySelectorAll("[data-i18n]").forEach(function(el){let k=el.dataset.i18n;if(t(k))el.textContent=t(k)});document.querySelectorAll("[data-i18n-placeholder]").forEach(function(el){el.placeholder=t(el.dataset.i18nPlaceholder)});translateOptions();$("language").value=LANG;$("alertButton").textContent=S.alert&&S.alert.on?(LANG==="hi"?"अलर्ट चालू":"Alert on"):t("alerts");updateAreaLabels();updateAQIText();if(S.data)render();}
-const S={lat:28.6139,lon:77.209,name:"New Delhi, India",locationKind:"place",locationNameResolved:true,locationResolving:false,locationRequestId:0,data:null,weather:null,dataMeta:null,favorites:safeGet("vg_favorites",[]),members:safeGet("vg_members",[]),home:safeGet("vg_home",{}),checks:safeGet("vg_checks",{}),alert:safeGet("vg_alert",{on:false,threshold:150}),cache:{},lastNotice:""};
+const S={lat:28.6139,lon:77.209,name:"New Delhi, India",locationKind:"place",locationNameResolved:true,locationResolving:false,locationRequestId:0,data:null,weather:null,dataMeta:null,favorites:safeGet("vg_favorites",[]),members:safeGet("vg_members",[]),home:safeGet("vg_home",{}),checks:safeGet("vg_checks",{}),indoorSources:safeGet("vg_indoor_sources",[]),alert:safeGet("vg_alert",{on:false,threshold:150}),cache:{},lastNotice:""};
 function toast(s){$("toast").textContent=s;$("toast").classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(function(){$("toast").classList.remove("show")},2800)}
 function cat(v){if(v<=50)return LANG==="hi"?"अच्छा":"Good";if(v<=100)return LANG==="hi"?"मध्यम":"Moderate";if(v<=150)return LANG==="hi"?"संवेदनशील समूहों के लिए अस्वस्थ":"Unhealthy for sensitive groups";if(v<=200)return LANG==="hi"?"अस्वस्थ":"Unhealthy";if(v<=300)return LANG==="hi"?"बहुत अस्वस्थ":"Very unhealthy";return LANG==="hi"?"खतरनाक":"Hazardous"}
 function forecastInstant(d,j){let s=d.hourly.time[j],m=String(s).match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);if(!m)return new Date(s).getTime();let local=Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5]);return local-((d.utc_offset_seconds||0)*1000)}function currentIndex(d){if(!d||!d.hourly)return 0;let now=Date.now(),a=d.hourly.time,last=0;for(let i=0;i<a.length;i++){if(forecastInstant(d,i)<=now)last=i;else break}return last}
@@ -1031,7 +1194,33 @@ $("saveHome").onclick=saveHome;$("addMember").onclick=function(){let name=$("mem
 const sourceNames=["Incense / dhoop","Mosquito coil","Smoking / vaping","Cooking without extraction","Frequent dry sweeping","Dampness / visible mould","Renovation or construction dust"],sourceTips=["Avoid burning incense or dhoop indoors; choose a non-combustion alternative.","Avoid mosquito coils indoors; consider screens or non-smoke controls.","Keep indoor spaces smoke-free.","Use externally vented kitchen extraction where possible.","Use damp mopping or damp dusting rather than dry sweeping.","Address the moisture source and use appropriate remediation.","Isolate work areas and control dust at source."],sourceTipsHi=["घर के अंदर धूप या अगरबत्ती जलाने से बचें; बिना धुएं वाले विकल्प अपनाएं।","मच्छर कॉइल से बचें; जाली या बिना धुएं वाले विकल्प देखें।","घर को धूम्रपान और वेपिंग से मुक्त रखें।","संभव हो तो हवा बाहर निकालने वाला किचन एग्जॉस्ट इस्तेमाल करें।","सूखी झाड़ू के बजाय गीले कपड़े या पोछे से सफाई करें।","सीलन के कारण को दूर करें और उपयुक्त मरम्मत कराएं।","काम की जगह अलग रखें और धूल के स्रोत को नियंत्रित करें।"];
 
 function calculateCADR(){let area=+$("roomArea").value,height=+$("ceilingHeight").value,ach=+$("airChanges").value;if(!(area>0&&area<=300&&height>=1.8&&height<=6&&ach>=1&&ach<=10)){$("cadrResult").textContent=LANG==="hi"?"कमरे का मान सही भरें।":"Enter a valid room size, ceiling height and ACH.";return}let m3h=area*height*ach,cfm=m3h*.5886;$("cadrResult").innerHTML="<b>"+Math.ceil(m3h)+" m³/h</b><br>"+Math.ceil(cfm)+" CFM · "+(LANG==="hi"?"चुने गए कमरे और ACH इनपुट के लिए उदाहरण आधारित आपूर्ति।":"Illustrative clean-air delivery for the selected room and ACH input.")}
-function renderSourceChecklist(){$("sourcesList").innerHTML=sourceNames.map(function(s,i){return '<label class="check"><input type="checkbox" data-source="'+i+'">'+(LANG==="hi"?["अगरबत्ती / धूप","मच्छर कॉइल","धूम्रपान / वेपिंग","बिना एग्जॉस्ट खाना बनाना","बार-बार सूखी झाड़ू","सीलन / दिखाई देने वाली फफूंदी","मरम्मत या निर्माण की धूल"][i]:s)+'</label>'}).join("");$("sourcesList").querySelectorAll("[data-source]").forEach(function(c){c.onchange=function(){let checked=Array.from($("sourcesList").querySelectorAll("[data-source]:checked")).map(function(x){return +x.dataset.source});if(!checked.length){$("indoorResult").textContent=t("sourceDefault");return}let list=checked.map(function(i){return LANG==="hi"?sourceTipsHi[i]:sourceTips[i]});$("indoorResult").innerHTML="<b>"+(LANG==="hi"?"आपकी प्राथमिकता सूची":"Your priority actions")+"</b><br>"+list.map(escapeHTML).join("<br>")}})}
+function renderSourceChecklist(){
+ let selected=Array.isArray(S.indoorSources)?S.indoorSources.filter(function(i){return Number.isInteger(i)&&i>=0&&i<sourceNames.length}):[];
+ S.indoorSources=selected;
+ let hi=LANG==="hi";
+ let names=hi?["अगरबत्ती / धूप","मच्छर कॉइल","धूम्रपान / वेपिंग","बिना एग्जॉस्ट खाना बनाना","बार-बार सूखी झाड़ू","सीलन / दिखाई देने वाली फफूंदी","मरम्मत या निर्माण की धूल"]:sourceNames;
+ $("sourcesList").innerHTML=sourceNames.map(function(s,i){
+  let checked=selected.indexOf(i)!==-1;
+  return '<label class="source-choice'+(checked?' selected':'')+'"><span class="source-number">'+String(i+1).padStart(2,"0")+'</span><span class="source-name">'+escapeHTML(names[i])+'</span><input type="checkbox" data-source="'+i+'" '+(checked?'checked':'')+' aria-label="'+escapeHTML(names[i])+'"><span class="source-checkmark" aria-hidden="true">✓</span></label>';
+ }).join("");
+ $("sourcesList").querySelectorAll("[data-source]").forEach(function(box){
+  box.onchange=function(){
+   S.indoorSources=Array.from($("sourcesList").querySelectorAll("[data-source]:checked")).map(function(x){return +x.dataset.source});
+   safeSet("vg_indoor_sources",S.indoorSources);
+   renderSourceChecklist();
+  };
+ });
+ let count=selected.length,total=sourceNames.length;
+ let countText=hi?(count===0?t("sourceCountZero"):count===1?t("sourceCountOne"):count+" / "+total+" "+t("sourceCountMany")):(count===0?t("sourceCountZero"):count===1?t("sourceCountOne"):count+" "+t("sourceCountMany"));
+ $("sourceCount").textContent=countText;
+ $("sourceProgress").style.width=(count/total*100)+"%";
+ if(!count){
+  $("indoorResult").innerHTML='<div class="source-empty"><span class="source-empty-mark">✳</span><div><b>'+t("sourceResultEmpty")+'</b><small>'+t("sourceDefault")+'</small></div></div>';
+ }else{
+  let tips=selected.map(function(i){return hi?sourceTipsHi[i]:sourceTips[i]});
+  $("indoorResult").innerHTML='<div class="source-result-title"><span>'+t("sourceResultTitle")+'</span><b>'+count+'/'+total+'</b></div><div class="source-action-list">'+tips.map(function(tip,n){return '<div class="source-action-item"><span>'+(n+1).toString().padStart(2,"0")+'</span><p>'+escapeHTML(tip)+'</p></div>'}).join("")+'</div>';
+ }
+}
 ["roomArea","ceilingHeight","airChanges"].forEach(function(id){$(id).addEventListener("input",calculateCADR);$(id).addEventListener("change",calculateCADR)});
 $("findWindows").onclick=function(){if(!S.data)return toast("Forecast is still loading");let activity=$("activity").value,duration=$("duration").value,h=S.data.hourly,ix=currentIndex(S.data),rows=h.us_aqi.slice(ix,ix+48).map(function(v,n){return {v:v,time:h.time[ix+n]}}).filter(function(x){return x.v!=null}).sort(function(a,b){return a.v-b.v}).slice(0,5);let activityText=LANG==="hi"?({walk:"टहलना / काम",exercise:"बाहरी व्यायाम",school:"स्कूल का सफर",commute:"यात्रा",cycle:"साइकिल"})[activity]:({walk:"Walk / errands",exercise:"Outdoor exercise",school:"School journey",commute:"Commute",cycle:"Cycling"})[activity];$("planResults").innerHTML=rows.map(function(x,i){return '<div class="rowitem"><div class="rowico">'+(i+1)+'</div><div><b>'+dateTime(x.time)+' · '+Math.round(x.v)+' AQI</b><p>'+activityText+" · "+(LANG==="hi"?duration+" मिनट":duration+" min")+" · "+cat(x.v)+". "+(LANG==="hi"?"अपेक्षाकृत कम मॉडल मान; सुरक्षित होने की गारंटी नहीं।":"Comparatively lower model value; not a safety guarantee.")+'</p></div></div>'}).join("")||'<p class="muted">No forecast windows available.</p>'};
 const ef={car:192,bike:72,bus:89,metro:45,carpool:96,cycle:0};$("calcTransport").onclick=function(){let km=+$("distance").value,days=+$("days").value;if(!(km>0&&km<=300&&days>=1&&days<=7))return toast("Enter a valid distance and 1–7 travel days.");let trip=km*2*days,a=trip*ef[$("currentMode").value]/1000,b=trip*ef[$("altMode").value]/1000,diff=a-b;$("transportResult").innerHTML="<b>"+(diff>=0?diff.toFixed(2)+" kg avoided":Math.abs(diff).toFixed(2)+" kg higher estimate")+"</b><br>"+(LANG==="hi"?"मौजूदा विकल्प: ":"Current mode: ")+a.toFixed(2)+" kg CO₂/week<br>"+(LANG==="hi"?"वैकल्पिक विकल्प: ":"Alternative: ")+b.toFixed(2)+" kg CO₂/week<br>"+(LANG==="hi"?"यह उदाहरण आधारित उत्सर्जन तुलना है, व्यक्तिगत प्रदूषण संपर्क का अनुमान नहीं।":"Illustrative transport estimate, not a personal air-pollution exposure estimate.")};
