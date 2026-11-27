@@ -298,6 +298,8 @@ The design aims to reduce the number of steps between looking up a location and 
 - No private API credentials in the frontend.
 - Local preferences are stored in local storage.
 - Geocoding and forecast calls send the searched coordinates to public Open-Meteo endpoints.
+- The optional **Use my location** button calls the browser Geolocation API only after a user click. Browser permission is required; denied, unavailable, timed-out and insecure-context cases show an explanatory message.
+- Device-derived coordinates are held in the active page session and are not written to the persistent forecast cache by that request. A visitor may explicitly choose **Save place** to add the current location to the browser-local saved-place list.
 - Citizen report notes are not transmitted by the app.
 - Browser notifications are opt-in and use the visitor's browser permission.
 
