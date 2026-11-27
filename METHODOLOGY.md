@@ -280,34 +280,23 @@ The review considered product and help pages from IQAir AirVisual, EPA AirNow, O
 
 **Design decisions from the review:** keep the current reading and main interpretation above the fold; show the pollutant breakdown as a compact set of comparable data tiles; give forecasts their own visual hierarchy; allow fast place switching; make actionable guidance discoverable; and distinguish model data from official observations in the interface itself. Do not add a map, station ranking, trend history or sensor state unless an appropriate data source exists.
 
-### VayuGuard visual system
+### VayuGuard visual system — Human Field Journal
 
-The redesign uses a distinctive civic/environmental “field desk” direction rather than a generic AI-chat interface:
+The latest visual pass responds to product feedback that the earlier neutral dashboard felt too much like a generic collection of white SaaS cards and that labels were too small. The new direction is a **Human Field Journal**: an environmental field desk with warmer paper-like surfaces, expressive data colour and a chart that feels like a real instrument panel.
 
-- Deep forest-green navigation rail, restrained lime highlight and clean neutral work surface.
-- Compact sans-serif display typography for scanability, with a monospaced label treatment for units, timestamps and provenance.
-- High-contrast current-air summary paired with plain-language interpretation; the AQI reading remains visually important but does not dominate the complete page.
-- Pollutants displayed as aligned measurement tiles, not floating statistics.
-- Reusable card, form, row, badge and button styles across every section.
-- Dark source-check panel in the indoor section, giving interactive controls a stronger visual anchor.
-- Consistent iconography, clearer focus states, hover feedback, mobile navigation and reduced-motion handling.
-- Fixed grid sizing and min-width safeguards to prevent two-column content from extending beyond the viewport.
+- **Warm city-paper canvas:** sage-grey background with subtle light gradients, replacing the flat white work surface.
+- **Deep forest navigation:** retains the dark identity rail and lime active-state marker, with clear icons, bigger labels and consistent hit areas.
+- **A hero with a human voice:** the current model summary and plain-language interpretation are larger and easier to scan, with the data type visible rather than hidden in a footnote.
+- **Pollutant tiles as a visual family:** six distinct, softly tinted pollutant cards use a clear typographic scale, consistent units and a small colour cue for faster comparison.
+- **Weather as a supporting strip:** wind and humidity are presented as legible context, not competing hero metrics.
+- **A real forecast instrument:** the 24-hour chart uses a dark forest surface, a lime forecast curve, a soft area fill, larger axis labels and a small number of readable time ticks.
+- **A warm planning companion:** the relatively lower-hour list uses a parchment/amber surface and clear time/value rows. It never labels a lower hour as safe.
+- **A more human daily outlook:** the five-day tiles use a restrained palette of sage, ochre, clay, teal and muted violet to help each day read as a separate card.
+- **Readable everywhere:** body copy, form controls, chart labels and supporting notes were increased; responsive layouts keep the chart and comparison panels usable on narrow screens.
+- **Consistent interaction:** forms, alerts, chips, location controls, quick actions, keyboard focus, reduced motion and mobile behaviour share one design system.
 
-The intention is a practical control surface: clear enough to use quickly, calm enough to trust, and visually distinct from an “AI for everything” template.
+The intent is not to imitate a competitor's screen. It is to combine AirNow's immediate "current air → primary pollutant → what to do" hierarchy, IQAir's auto-location/forecast/alert discovery, OpenAQ's source-aware data presentation and Google Air Quality's now/history/forecast mental model into a distinct, calmer product.
 
-
-The current redesign intentionally moves away from generic AI/SaaS visual conventions:
-- editorial typography and a restrained civic/environmental palette;
-- direct air briefing as the first screen, not an AI chatbot;
-- visible labels for modelled data and index type;
-- short, task-oriented navigation;
-- actionable planning, location watchlist, household, indoor, commute and civic-report sections;
-- English and Hindi UI;
-- browser print view for saving a briefing;
-- responsive layout and reduced-motion preference support;
-- browser-local storage with no account requirement.
-
-The design aims to reduce the number of steps between looking up a location and taking an action.
 
 ## 7. Privacy and security controls
 
