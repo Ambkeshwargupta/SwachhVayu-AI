@@ -527,8 +527,8 @@ function translateOptions(){
  let ach=$("airChanges");if(ach){Array.from(ach.options).forEach(function(o){o.textContent=o.value+" ACH"})}
 }
 
-function translate(){document.documentElement.lang=LANG;if($("myLocation")){$("myLocation").title=t("myLocation");$("myLocation").setAttribute("aria-label",t("myLocation"))}if(S.locationKind==="device"&&!S.locationNameResolved)S.name=t("myLocationName");document.querySelectorAll("[data-i18n]").forEach(function(el){let k=el.dataset.i18n;if(t(k))el.textContent=t(k)});document.querySelectorAll("[data-i18n-placeholder]").forEach(function(el){el.placeholder=t(el.dataset.i18nPlaceholder)});translateOptions();$("language").value=LANG;$("alertButton").textContent=S.alert&&S.alert.on?(LANG==="hi"?"अलर्ट चालू":"Alert on"):t("alerts");updateAQIText();if(S.data)render();}
-const S={lat:28.6139,lon:77.209,name:"New Delhi, India",locationKind:"place",locationNameResolved:true,locationRequestId:0,data:null,weather:null,dataMeta:null,favorites:safeGet("vg_favorites",[]),members:safeGet("vg_members",[]),home:safeGet("vg_home",{}),checks:safeGet("vg_checks",{}),alert:safeGet("vg_alert",{on:false,threshold:150}),cache:{},lastNotice:""};
+function translate(){document.documentElement.lang=LANG;if($("myLocation")){$("myLocation").title=t("myLocation");$("myLocation").setAttribute("aria-label",t("myLocation"))}if(S.locationKind==="device"&&!S.locationNameResolved)S.name=S.locationResolving?t("resolvingArea"):t("myLocationName")+" ("+S.lat.toFixed(3)+", "+S.lon.toFixed(3)+")";document.querySelectorAll("[data-i18n]").forEach(function(el){let k=el.dataset.i18n;if(t(k))el.textContent=t(k)});document.querySelectorAll("[data-i18n-placeholder]").forEach(function(el){el.placeholder=t(el.dataset.i18nPlaceholder)});translateOptions();$("language").value=LANG;$("alertButton").textContent=S.alert&&S.alert.on?(LANG==="hi"?"अलर्ट चालू":"Alert on"):t("alerts");updateAreaLabels();updateAQIText();if(S.data)render();}
+const S={lat:28.6139,lon:77.209,name:"New Delhi, India",locationKind:"place",locationNameResolved:true,locationResolving:false,locationRequestId:0,data:null,weather:null,dataMeta:null,favorites:safeGet("vg_favorites",[]),members:safeGet("vg_members",[]),home:safeGet("vg_home",{}),checks:safeGet("vg_checks",{}),alert:safeGet("vg_alert",{on:false,threshold:150}),cache:{},lastNotice:""};
 function toast(s){$("toast").textContent=s;$("toast").classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(function(){$("toast").classList.remove("show")},2800)}
 function cat(v){if(v<=50)return LANG==="hi"?"अच्छा":"Good";if(v<=100)return LANG==="hi"?"मध्यम":"Moderate";if(v<=150)return LANG==="hi"?"संवेदनशील समूहों के लिए अस्वस्थ":"Unhealthy for sensitive groups";if(v<=200)return LANG==="hi"?"अस्वस्थ":"Unhealthy";if(v<=300)return LANG==="hi"?"बहुत अस्वस्थ":"Very unhealthy";return LANG==="hi"?"खतरनाक":"Hazardous"}
 function forecastInstant(d,j){let s=d.hourly.time[j],m=String(s).match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);if(!m)return new Date(s).getTime();let local=Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5]);return local-((d.utc_offset_seconds||0)*1000)}function currentIndex(d){if(!d||!d.hourly)return 0;let now=Date.now(),a=d.hourly.time,last=0;for(let i=0;i<a.length;i++){if(forecastInstant(d,i)<=now)last=i;else break}return last}
@@ -554,7 +554,7 @@ function bindSearch(inputId,boxId){let input=$(inputId),box=$(boxId);input.addEv
 bindSearch("topSearch","suggestions");bindSearch("placeSearch","placeSuggestions");
 function updateAreaLabels(){
  const name=S.name||t("myLocationName");
- const source=S.locationKind==="device"?t("gpsSource"):t("searchedSource");
+ const source=S.locationKind==="device"?(S.locationResolving?t("resolvingArea"):S.locationNameResolved?t("gpsSource"):t("areaNameUnavailable")):t("searchedSource");
  const main=$("currentAreaName"),dash=$("dashboardAreaName"),src=$("areaSource"),dashSrc=$("dashboardAreaSource"),indicator=$("areaIndicator");
  if(main){main.textContent=name;main.title=name}
  if(dash){dash.textContent=name;dash.title=name}
@@ -563,7 +563,7 @@ function updateAreaLabels(){
  if(indicator){indicator.title=t("locationProviderNote");indicator.setAttribute("aria-label",t("currentAreaLabel")+": "+name+" · "+source)}
  const chart=$("chartLocation");if(chart)chart.textContent=name;
 }
-function setCurrent(p){S.lat=p.lat;S.lon=p.lon;S.name=p.name;S.locationKind=p.isDeviceLocation?"device":"place";S.locationNameResolved=!p.isDeviceLocation;S.locationRequestId++;updateAreaLabels();S.data=null;S.weather=null;S.dataMeta=null;$("aqi").textContent="—";$("aqiLabel").textContent=t("loading");$("updated").textContent=LANG==="hi"?"नई जगह का डेटा लोड हो रहा है…":"Loading the selected location…";go("dashboard");load(true)}
+function setCurrent(p){S.lat=p.lat;S.lon=p.lon;S.name=p.name;S.locationKind=p.isDeviceLocation?"device":"place";S.locationNameResolved=!p.isDeviceLocation;S.locationResolving=!!p.isDeviceLocation;S.locationRequestId++;updateAreaLabels();S.data=null;S.weather=null;S.dataMeta=null;$("aqi").textContent="—";$("aqiLabel").textContent=t("loading");$("updated").textContent=LANG==="hi"?"नई जगह का डेटा लोड हो रहा है…":"Loading the selected location…";go("dashboard");load(true)}
 function selectPlace(lat,lon,name){setCurrent({lat:lat,lon:lon,name:name})}
 
 function enterToSelect(inputId,boxId){$(inputId).addEventListener("keydown",async function(e){if(e.key!=="Enter")return;e.preventDefault();let q=$(inputId).value.trim();if(q.length<2)return;try{let found=await geocode(q);if(!found.length)return toast(LANG==="hi"?"स्थान नहीं मिला":"No matching place found");let p=found[0];setCurrent({lat:p.latitude,lon:p.longitude,name:safePlaceName(p)})}catch(err){toast(LANG==="hi"?"स्थान खोज अस्थायी रूप से उपलब्ध नहीं":"Location search is temporarily unavailable")}})}
@@ -614,6 +614,7 @@ function useMyLocation(){
    if(S.locationRequestId===requestId&&S.locationKind==="device"&&Math.abs(S.lat-lat)<1e-8&&Math.abs(S.lon-lon)<1e-8){
     S.name=readableArea;
     S.locationNameResolved=true;
+    S.locationResolving=false;
     updateAreaLabels();
     toast(t("locationSuccess")+" "+readableArea);
    }
@@ -621,9 +622,8 @@ function useMyLocation(){
    if(S.locationRequestId===requestId&&S.locationKind==="device"&&Math.abs(S.lat-lat)<1e-8&&Math.abs(S.lon-lon)<1e-8){
     S.name=t("myLocationName")+" ("+lat.toFixed(3)+", "+lon.toFixed(3)+")";
     S.locationNameResolved=false;
+    S.locationResolving=false;
     updateAreaLabels();
-    if($("areaSource"))$("areaSource").textContent=t("areaNameUnavailable");
-    if($("dashboardAreaSource"))$("dashboardAreaSource").textContent=t("areaNameUnavailable");
     toast(t("locationAreaFallback"));
    }
    console.warn("VayuGuard reverse geocoding unavailable",error);
