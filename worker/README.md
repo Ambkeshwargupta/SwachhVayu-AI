@@ -5,9 +5,8 @@ This is the server-side proxy for the VayuGuard Air Guide. It keeps the Gemini A
 ## Runtime
 
 - Cloudflare Workers
-- Google Gemini API: `gemini-3.6-flash`
-- Endpoint: `POST /ask` (runs a synchronous, non-stored Gemini interaction)
-- Legacy status endpoint: `GET /status/{taskId}` (not used by the current frontend)
+- Google Gemini API: `gemini-3.5-flash-lite`
+- Endpoint: `POST /ask` (runs a synchronous Gemini GenerateContent request)
 - Health check: `GET /health`
 - CORS allow-list: `https://ambkeshwargupta.github.io` plus localhost development origins
 - Rate limiter: 8 requests per 60 seconds per client IP in each Cloudflare location (approximate)
@@ -46,7 +45,7 @@ Health:
 curl http://127.0.0.1:8787/health
 ```
 
-Ask (waits for Gemini and returns the completed answer directly):
+Ask (waits for Gemini GenerateContent and returns the completed answer directly):
 
 ```bash
 curl -X POST http://127.0.0.1:8787/ask \
@@ -67,10 +66,10 @@ curl -X POST http://127.0.0.1:8787/ask \
   }'
 ```
 
-The sample uses illustrative values for local testing, not observed VayuGuard data. A successful `/ask` response contains `status: completed`, `answer`, `provider` and `model`. The Worker sends `store:false`; there is no browser polling loop.
+The sample uses illustrative values for local testing, not observed VayuGuard data. A successful `/ask` response contains `status: completed`, `answer`, `provider` and `model`. The Worker calls the GenerateContent endpoint directly; there is no browser polling loop.
 
 ## Safety and privacy
 
-The Worker normalises context to a fixed allow-list. It does not accept arbitrary system instructions from the browser. Precise coordinates are not included. It does not log prompts or responses. Its system instruction requires model/CPCB distinctions, prohibits fabricated measurements, and prevents medical diagnosis or safety guarantees. The current `/ask` handler sends `store:false` and does not create a stored background interaction. Google still processes the request under its applicable Gemini API terms and data handling policies.
+The Worker normalises context to a fixed allow-list. It does not accept arbitrary system instructions from the browser. Precise coordinates are not included. It does not log prompts or responses. Its system instruction requires model/CPCB distinctions, prohibits fabricated measurements, and prevents medical diagnosis or safety guarantees. The current `/ask` handler uses GenerateContent and does not create a stored Interactions API record. Google still processes the request under its applicable Gemini API terms and data handling policies.
 
 The public Worker URL is not a secret. The Gemini API key must remain only in GitHub Actions secrets and Cloudflare Worker secrets.
