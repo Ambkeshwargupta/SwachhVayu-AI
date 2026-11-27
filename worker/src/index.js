@@ -262,8 +262,9 @@ export default {
             model: MODEL,
             input: prompt,
             system_instruction: SYSTEM_INSTRUCTION + "\n\nRespond in " + language + ".",
-            generation_config: { max_output_tokens: 850 },
-            background: true
+            generation_config: { max_output_tokens: 850, thinking_level: "low" },
+            background: true,
+            store: true
           })
         },
         20000
