@@ -45,10 +45,6 @@ function json(data, status, origin) {
   return new Response(JSON.stringify(data), { status, headers });
 }
 
-function hasGeminiKey(env) {
-  return typeof env.GEMINI_API_KEY === "string" && env.GEMINI_API_KEY.trim().length > 0;
-}
-
 function cleanString(value, max = 160) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
 }
@@ -57,6 +53,10 @@ function safeNumber(value, min = -1e9, max = 1e9) {
   return typeof value === "number" && Number.isFinite(value) && value >= min && value <= max
     ? value
     : null;
+}
+
+function hasGeminiKey(env) {
+  return typeof env.GEMINI_API_KEY === "string" && env.GEMINI_API_KEY.trim().length > 0;
 }
 
 function cleanContext(input) {
@@ -89,6 +89,39 @@ function cleanContext(input) {
   };
 }
 
+async function upstreamJson(url, options, timeoutMs = 20000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    const data = await response.json().catch(() => ({}));
+    return { response, data };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function responseText(data) {
+  if (typeof data?.output_text === "string" && data.output_text.trim()) return data.output_text.trim();
+  const steps = Array.isArray(data?.steps) ? data.steps : [];
+  return steps
+    .filter((step) => step && step.type === "model_output")
+    .flatMap((step) => Array.isArray(step.content) ? step.content : [])
+    .filter((part) => part && part.type === "text" && typeof part.text === "string")
+    .map((part) => part.text)
+    .join("\n")
+    .trim();
+}
+
+function providerError(status, data) {
+  const code = cleanString(data?.error?.status || data?.error?.code, 50);
+  if (status === 429) return "Gemini is busy or the API quota has been reached. Please try again shortly.";
+  if (status === 401 || status === 403) return "Gemini authentication or project access was rejected. Check the API key and Gemini API access.";
+  if (status === 400) return "Gemini rejected the request configuration" + (code ? " (" + code + ")" : "") + ".";
+  if (status >= 500) return "Gemini is temporarily experiencing a service issue. Please try again.";
+  return "The Gemini service could not complete this request (HTTP " + status + ").";
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin") || "";
@@ -108,33 +141,62 @@ export default {
       });
     }
 
-    if (origin && !ALLOWED_ORIGINS.has(origin)) {
-      return json({ error: "Origin not allowed." }, 403, "");
-    }
+    if (origin && !ALLOWED_ORIGINS.has(origin)) return json({ error: "Origin not allowed." }, 403, "");
 
     if (request.method === "GET" && url.pathname === "/health") {
       return json({
         status: "ok",
         service: "VayuGuard Gemini assistant",
         model: MODEL,
+        api: "Gemini Interactions API",
         ready: hasGeminiKey(env)
       }, 200, origin);
     }
 
-    if (request.method !== "POST" || url.pathname !== "/ask") {
-      return json({ error: "Not found." }, 404, origin);
+    if (request.method === "GET" && url.pathname.startsWith("/status/")) {
+      if (!hasGeminiKey(env)) return json({ error: "The Gemini service is not configured yet." }, 503, origin);
+      const taskId = url.pathname.slice("/status/".length);
+      if (!/^[A-Za-z0-9_-]{6,200}$/.test(taskId)) return json({ error: "Invalid interaction ID." }, 400, origin);
+
+      try {
+        const { response, data } = await upstreamJson(
+          "https://generativelanguage.googleapis.com/v1beta/interactions/" + encodeURIComponent(taskId),
+          {
+            method: "GET",
+            headers: {
+              "x-goog-api-key": env.GEMINI_API_KEY,
+              "Api-Revision": "2026-05-20"
+            }
+          },
+          15000
+        );
+        if (!response.ok) return json({ error: providerError(response.status, data) }, 502, origin);
+        if (data.status === "failed") return json({ error: "Gemini could not complete this answer. Please try a new question." }, 502, origin);
+        if (data.status === "completed") {
+          const answer = responseText(data);
+          if (!answer) return json({ error: "Gemini completed the interaction without a text answer. Please try again." }, 502, origin);
+          return json({
+            status: "completed",
+            answer: answer.slice(0, 9000),
+            model: MODEL,
+            provider: "Google Gemini",
+            basedOn: "The question and current VayuGuard page context supplied with this request."
+          }, 200, origin);
+        }
+        return json({ status: data.status || "in_progress" }, 202, origin);
+      } catch (error) {
+        if (error && error.name === "AbortError") return json({ error: "Gemini status check timed out. Please try again." }, 504, origin);
+        return json({ error: "The Gemini service is temporarily unavailable." }, 502, origin);
+      }
     }
 
-    if (!hasGeminiKey(env)) {
-      return json({ error: "The Gemini service is not configured yet." }, 503, origin);
-    }
+    if (request.method !== "POST" || url.pathname !== "/ask") return json({ error: "Not found." }, 404, origin);
+    if (!hasGeminiKey(env)) return json({ error: "The Gemini service is not configured yet." }, 503, origin);
 
     const clientIp = request.headers.get("CF-Connecting-IP") || "anonymous";
     if (env.AI_LIMITER) {
       const { success } = await env.AI_LIMITER.limit({ key: clientIp });
-      if (!success) {
-        return json({ error: "Too many questions in a short period. Please wait a minute and try again." }, 429, origin);
-      }
+      if (!success) return json({ error: "Too many questions in a short period. Please wait a minute and try again." }, 429, origin);
     }
 
     const contentLength = Number(request.headers.get("Content-Length") || "0");
@@ -148,9 +210,7 @@ export default {
     }
 
     const question = cleanString(body && body.question, 1600);
-    if (question.length < 2) {
-      return json({ error: "Please enter a question of at least two characters." }, 400, origin);
-    }
+    if (question.length < 2) return json({ error: "Please enter a question of at least two characters." }, 400, origin);
 
     const language = body && body.language === "hi" ? "Hindi" : "English";
     const context = cleanContext(body && body.context);
@@ -164,60 +224,51 @@ export default {
       "Answer using this supplied context. Clearly state when a detail is not available."
     ].join("\n");
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 45000);
     try {
-      const upstream = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/" + MODEL + ":generateContent",
+      const { response, data } = await upstreamJson(
+        "https://generativelanguage.googleapis.com/v1beta/interactions",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-goog-api-key": env.GEMINI_API_KEY
+            "x-goog-api-key": env.GEMINI_API_KEY,
+            "Api-Revision": "2026-05-20"
           },
           body: JSON.stringify({
-            systemInstruction: {
-              parts: [{ text: SYSTEM_INSTRUCTION + "\n\nRespond in " + language + "." }]
-            },
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.35, maxOutputTokens: 850 }
-          }),
-          signal: controller.signal
-        }
+            model: MODEL,
+            input: prompt,
+            system_instruction: SYSTEM_INSTRUCTION + "\n\nRespond in " + language + ".",
+            generation_config: { max_output_tokens: 850 },
+            background: true
+          })
+        },
+        20000
       );
 
-      if (!upstream.ok) {
-        if (upstream.status === 429) {
-          return json({ error: "Gemini is busy or the API quota has been reached. Please try again shortly." }, 429, origin);
-        }
-        if ([400, 403, 404].includes(upstream.status)) {
-          return json({ error: "Gemini rejected the request. Check the API key, model access and Gemini API configuration." }, 502, origin);
-        }
-        return json({ error: "The Gemini service could not complete the request right now." }, 502, origin);
+      if (!response.ok) return json({ error: providerError(response.status, data) }, response.status === 429 ? 429 : 502, origin);
+      if (!data.id || typeof data.id !== "string") return json({ error: "Gemini did not return an interaction ID. Please try again." }, 502, origin);
+
+      if (data.status === "completed") {
+        const answer = responseText(data);
+        if (!answer) return json({ error: "Gemini completed without a text answer. Please try again." }, 502, origin);
+        return json({
+          status: "completed",
+          answer: answer.slice(0, 9000),
+          model: MODEL,
+          provider: "Google Gemini"
+        }, 200, origin);
       }
 
-      const data = await upstream.json();
-      const parts = data && data.candidates && data.candidates[0] &&
-        data.candidates[0].content && data.candidates[0].content.parts || [];
-      const answer = parts.filter((part) => part && part.thought !== true).map((part) => typeof part.text === "string" ? part.text : "").join("\n").trim();
-
-      if (!answer) {
-        return json({ error: "Gemini returned no text for this question. Try rephrasing it." }, 502, origin);
-      }
-
+      if (data.status === "failed") return json({ error: "Gemini could not start this answer. Please try again." }, 502, origin);
       return json({
-        answer: answer.slice(0, 9000),
+        status: "in_progress",
+        taskId: data.id,
         model: MODEL,
-        provider: "Google Gemini",
-        basedOn: "The question and current VayuGuard page context supplied with this request."
-      }, 200, origin);
+        provider: "Google Gemini"
+      }, 202, origin);
     } catch (error) {
-      if (error && error.name === "AbortError") {
-        return json({ error: "The Gemini response took too long. Please try again." }, 504, origin);
-      }
+      if (error && error.name === "AbortError") return json({ error: "Gemini could not start the request in time. Please try again." }, 504, origin);
       return json({ error: "The Gemini service is temporarily unavailable." }, 502, origin);
-    } finally {
-      clearTimeout(timeout);
     }
   }
 };
