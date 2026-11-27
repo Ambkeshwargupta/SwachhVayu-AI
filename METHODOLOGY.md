@@ -142,6 +142,38 @@ Official references:
 - data.gov.in resource: https://www.data.gov.in/resource/real-time-air-quality-index-various-locations
 - CPCB air-quality portal: https://airquality.cpcb.gov.in/
 
+### 3.6 Generative AI explanation service
+
+VayuGuard's Air Guide uses Google's Gemini API through a Cloudflare Worker. The current configured model is `gemini-3.8-flash`.
+
+Request path:
+1. The visitor types a question and presses **Send** in the Air Guide.
+2. The browser sends the question, selected language and a deliberately limited context packet to the Worker.
+3. The Worker validates and normalises the question/context fields, applies a Cloudflare rate-limit binding, and calls Google's `generateContent` endpoint.
+4. The Worker returns the generated answer to the browser. The Gemini API key remains in Cloudflare's encrypted Worker secret store; it is never shipped in the static site.
+5. The frontend labels the connected model and displays a live response marker.
+
+Context packet fields:
+- selected area display name (not precise latitude/longitude);
+- modelled U.S. AQI value and category;
+- leading pollutant-specific U.S. AQI sub-index;
+- six available pollutant concentration estimates;
+- local wind speed and relative humidity, when present;
+- forecast fetch timestamp and up to 24 future hourly modelled U.S. AQI values.
+
+The model receives a fixed system instruction that explicitly distinguishes CAMS Global modelled U.S. AQI from CPCB National AQI and official CPCB station observations. It must not invent missing readings, promise a lower forecast hour is safe, diagnose a health condition, calculate personal exposure dose or recommend medication changes. It can only explain the context supplied by the app and general air-quality concepts; it does not browse the web or fetch other live sources.
+
+Security controls include:
+- Gemini key stored as a GitHub Actions secret and then uploaded to Cloudflare as an encrypted Worker secret.
+- API key used only in a server-to-server request header; never embedded in client JavaScript.
+- CORS allow-list limited to the production GitHub Pages origin and local development origins.
+- Question length and request-body bounds.
+- Cloudflare Worker rate-limit binding configured for 8 requests per minute per client IP within each Cloudflare location. Cloudflare documents this as approximate and location-local, not a strict global quota.
+- No prompt/response logging in the Worker code.
+- The browser receives generated text only; the Gemini provider/model label is returned with the response.
+
+The deployment workflow requires GitHub repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, in addition to the existing `GEMINI_API_KEY`. It deploys the Worker, synchronises the Gemini secret and writes the resulting Worker URL into the public `ai-config.js` file. The endpoint URL is public by design; the Gemini API key is not.
+
 ## 4. What each calculation means
 
 ### 4.1 Current modelled U.S. AQI
@@ -312,6 +344,9 @@ The intent is not to imitate a competitor's screen. It is to combine AirNow's im
 
 - No sign-in or server-side profile store.
 - No private API credentials in the frontend.
+- The Gemini API key is stored as an encrypted Cloudflare Worker secret. The static page contains only the public Worker endpoint URL.
+- When the visitor submits an Air Guide question, the prompt and selected-area forecast context packet are sent to Cloudflare and Google Gemini. Precise device latitude/longitude is not included in this AI packet.
+- The application does not collect AI chat history into an account or server-side user profile. The current conversation remains in the active browser page only.
 - Local preferences are stored in local storage.
 - Place-name search uses Open-Meteo Geocoding. When the visitor explicitly uses browser geolocation, current coordinates are also sent directly from the browser to BigDataCloud's free reverse-geocoding endpoint to resolve a visible locality/city label. Its documented IP-and-coordinate aggregation practice is described in section 3.4.
 - The optional **Use my location** button calls the browser Geolocation API only after a user click. Browser permission is required; denied, unavailable, timed-out and insecure-context cases show an explanatory message.
@@ -338,8 +373,8 @@ Known gaps:
 - no independent sensor network;
 - no historical personal or station time series;
 - no street-level map, route optimisation or source-attribution layer;
-- no backend cache or scheduled push alerts;
-- no generative AI model integration;
+- no shared backend profile store, forecast cache or scheduled push alerts;
+- the Gemini assistant requires the separate Cloudflare Worker deployment and its encrypted Gemini secret to be active;
 - commute factors are illustrative;
 - no indoor sensor integration.
 
@@ -369,6 +404,9 @@ This separation is the foundation for a credible product rather than a visually 
 10. OpenAQ platform: https://openaq.org/platform/
 11. OpenAQ API overview: https://docs.openaq.org/about/about
 12. WHO 2021 Global Air Quality Guidelines: https://www.who.int/publications/i/item/9789240034228
+13. Gemini API documentation: https://ai.google.dev/gemini-api/docs
+14. Cloudflare Workers GitHub Actions deployment: https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/
+15. Cloudflare Workers rate limiting: https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/
 13. BigDataCloud free client-side reverse geocoding and privacy: https://www.bigdatacloud.com/docs/article/why-is-reverse-geocoding-api-free
 14. BigDataCloud JavaScript client field reference and fair-use policy: https://github.com/bigdatacloudapi/js-reverse-geocode-client
 13. EPA Guide to Air Cleaners in the Home: https://www.epa.gov/indoor-air-quality-iaq/guide-air-cleaners-home
