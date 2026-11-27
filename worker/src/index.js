@@ -1,3 +1,4 @@
+// Stable model documented for Gemini Interactions API and background execution.
 const MODEL = "gemini-3.6-flash";
 const API_REVISION = "2026-05-20";
 const ALLOWED_ORIGINS = new Set([
